@@ -8,40 +8,35 @@
 #define SHIFT_MODE = 0
 
 // GUItool: begin automatically generated code
-AudioInputI2S            i2sInput;           //xy=155,260
-AudioMixer4              mixerL;         //xy=383,260
-AudioMixer4              mixerR;         //xy=414,340
+AudioInputI2S            i2sInput;
+AudioMixer4              mixerL;
+AudioMixer4              mixerR;
 
 #ifdef NOISE_MODE
-AudioSynthNoiseWhite     noise;         //xy=156,224
-AudioConnection          patchCordInputMixerL(i2sInput, 0, mixerL, 1);
-AudioConnection          patchCordInputMixerR(i2sInput, 1, mixerR, 1);
-
-AudioConnection          patchCordNoiseMixerL(noise, 0, mixerL, 0);
-AudioConnection          patchCordNoiseMixerR(noise, 0, mixerR, 0);
+AudioSynthNoiseWhite     noise;
+float                    noiseAmplitude = 0.25;
+AudioConnection          connI2sInputToLMixer(i2sInput, 0, mixerL, 1);
+AudioConnection          connI2sInputToRMixer(i2sInput, 1, mixerR, 1);
+AudioConnection          connNoiseToLMixer(noise, 0, mixerL, 0);
+AudioConnection          connNoiseToRMixer(noise, 0, mixerR, 0);
 #endif
 
-#ifdef SHIFT_MODE
-AudioEffectGranular      pitchShiftR;      //xy=208,403
-AudioEffectGranular      pitchShiftL;      //xy=230,361
-AudioConnection          patchCordInputPitchShiftL(i2sInput, 0, pitchShiftL, 0);
-AudioConnection          patchCordInputPitchShiftR(i2sInput, 1, pitchShiftR, 0);
-
-AudioConnection          patchCordPitchShiftRMixerR(pitchShiftR, 0, mixerR, 2);
-AudioConnection          patchCordPitchShiftLMixerL(pitchShiftL, 0, mixerL, 2);
+#ifdef SHIFT_MODE 
+AudioEffectGranular      pitchShiftR;
+AudioEffectGranular      pitchShiftL;
+AudioConnection          connI2sInputToLPitchShift(i2sInput, 0, pitchShiftL, 0);
+AudioConnection          connI2sInputRPitchShift(i2sInput, 1, pitchShiftR, 0);
+AudioConnection          connLPitchShiftToLMixer(pitchShiftL, 0, mixerL, 2);
+AudioConnection          connRPitchShiftToRMixer(pitchShiftR, 0, mixerR, 2);
 #endif
 
-AudioOutputUSB           usbOutput;           //xy=636,298
-AudioOutputI2S           i2sOutput;           //xy=640,366
+AudioOutputUSB           usbOutput;
+AudioOutputI2S           i2sOutput;
 
-AudioConnection          patchCordUSBOutputMixerL(mixerL, 0, usbOutput, 0);
-AudioConnection          patchCordUSBOutputMixerR(mixerR, 0, usbOutput, 1);
-
-AudioConnection          patchCordI2sOutputMixerL(mixerL, 0, i2sOutput, 0);
-AudioConnection          patchCordI2sOutputMixerR(mixerR, 0, i2sOutput, 1);
-
-
-// GUItool: end automatically generated code
+AudioConnection          connLMixerToUSBOutput(mixerL, 0, usbOutput, 0);
+AudioConnection          connRMixerToUSBOutput(mixerR, 0, usbOutput, 1);
+AudioConnection          connLMixerToI2sOutput(mixerL, 0, i2sOutput, 0);
+AudioConnection          connRMixerToI2sOutput(mixerR, 0, i2sOutput, 1);
 
 AudioControlSGTL5000     audioShield;     //xy=145,43
 
@@ -55,14 +50,30 @@ void setup()
   audioShield.inputSelect(AUDIO_INPUT_LINEIN);
   audioShield.volume(0.5);
 
-  /// TODO: Move pitch shift code to seperate method
+  #ifdef NOISE_MODE
+  setupNoise();
+  #endif
+
+  #ifdef SHIFT_MODE
+  setupPitchShift();
+  #endif
+  
+  Serial.println("setup done");
+}
+
+void setupNoise()
+{
+  // Set the output peak level, from 0 (off) to 1.0. The default is off. Noise is generated only after setting to a non-zero level.
+  noise.amplitude(noiseAmplitude)
+}
+
+void setupPitchShift()
+{
   // the Granular effect requires memory to operate
   pitchShiftL.begin(granularMemory, GRANULAR_MEMORY_SIZE);
   pitchShiftR.begin(granularMemory, GRANULAR_MEMORY_SIZE);
   pitchShiftL.setSpeed(4.0);
   pitchShiftR.setSpeed(4.0);
-  
-  Serial.println("setup done");
 }
 
 void beginModulation()
@@ -85,8 +96,6 @@ void loop()
 /// TODO: Noise tuning to High Frequency
 void addNoise()
 {
-  // define a noise source
-
   // get a mixer
 
   // mix the input with the noise
@@ -94,7 +103,7 @@ void addNoise()
   // output mixer results to output
 }
 
-// SINE Wave that changes its own pitch
+// TODO: SINE Wave that changes its own pitch
 void toneSweep()
 {
   
