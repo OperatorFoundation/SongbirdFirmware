@@ -77,7 +77,7 @@ void loopModulation()
       maintainNoise();
       break;
     case PITCHSHIFT:
-      maintainShift()
+      maintainShift();
       break;
     case TONESWEEP:
       maintainTonesweep();

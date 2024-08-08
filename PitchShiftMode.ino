@@ -7,9 +7,9 @@ float pitchShiftGrainLength = 0; // grainLength is specified in milliseconds, up
 void setupPitchShift()
 {
   // TODO: Tweak the sample sizes based on relevant sizes: 1 msec, 3 msec, 25 msec
-  float someValue = 0.25; // 
+  float someValue = 0.25;
   float msec = 1.0 + (someValue * 99.0);
-  pitchShiftGrainLength = msec
+  pitchShiftGrainLength = msec;
 
   // the Granular effect requires memory to operate
   lPitchShift.begin(granularMemory, GRANULAR_MEMORY_SIZE);
@@ -43,7 +43,7 @@ void startPitchShift()
 
 void maintainShift()
 {
-  setPitchShiftLevels()
+  setPitchShiftLevels();
 }
 
 void stopPitchShift()
