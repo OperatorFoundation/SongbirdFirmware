@@ -1,3 +1,6 @@
+#include "mixer.h"
+#include "AudioStream.h"
+#include "usb_audio.h"
 #ifndef SETTINGS_h
 #define SETTINGS_h
 #include <Arduino.h>
@@ -20,7 +23,7 @@ Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 #define SW_UP_PIN 28
 #define SW_DOWN_PIN 27
 
-const int buttonPins[] = {SW_LEFT_PIN, SW_RIGHT_PIN, SW_UP_PIN, SW_DOWN_PIN};  // Adjust pin numbers as needed
+const int buttonPins[] = {SW_LEFT_PIN, SW_RIGHT_PIN, SW_UP_PIN, SW_DOWN_PIN};
 const int numButtons = sizeof(buttonPins) / sizeof(buttonPins[0]);
 
 // Bounce leftButton = Bounce(SW_LEFT_PIN, 15);
@@ -54,26 +57,43 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, OLED_RESET);  // d
 
 // AUDIO
 AudioSynthNoiseWhite     noise;         //xy=62,259
+AudioInputUSB            usbInput;
 AudioInputI2S            i2sInput;           //xy=62,368
 AudioSynthToneSweep      tonesweep;     //xy=69,313
 AudioEffectGranular      lPitchShift;      //xy=254,351
 AudioEffectGranular      rPitchShift;      //xy=254,388
-AudioMixer4              lMixer;         //xy=462,271
-AudioMixer4              rMixer;         //xy=462,345
+AudioMixer4              lUSBMixer;         //xy=462,271
+AudioMixer4              rUSBMixer;         //xy=462,345
+AudioMixer4              lHeadsetMixer;         //xy=462,271
+AudioMixer4              rHeadsetMixer;         //xy=462,345             
 AudioOutputUSB           usbOutput;           //xy=685,277
 AudioOutputI2S           i2sOutput;           //xy=686,338
-AudioConnection          noiseToLMixer(noise, 0, lMixer, 0);
-AudioConnection          noiseToRMixer(noise, 0, rMixer, 0);
+
+// Input from Headset
 AudioConnection          i2sInputToLShifter(i2sInput, 0, lPitchShift, 0);
 AudioConnection          i2sInputToRShifter(i2sInput, 1, rPitchShift, 0);
-AudioConnection          tonesweepToLMixer(tonesweep, 0, lMixer, 1);
-AudioConnection          tonesweepToRMixer(tonesweep, 0, rMixer, 1);
-AudioConnection          lShifterToLMixer(lPitchShift, 0, lMixer, 2);
-AudioConnection          rShifterToRMixer(rPitchShift, 0, rMixer, 2);
-AudioConnection          lMixerToUSBOut(lMixer, 0, usbOutput, 0);
-AudioConnection          lMixerToI2SOut(lMixer, 0, i2sOutput, 0);
-AudioConnection          rMixerToUSBOut(rMixer, 0, usbOutput, 1);
-AudioConnection          rMixerToI2SOut(rMixer, 0, i2sOutput, 1);
+
+// Input from USB
+AudioConnection          usbInputToLHeadsetMixer(usbInput, 0, lHeadsetMixer, 0);
+AudioConnection          usbInputToRHeadsetMixer(usbInput, 1, rHeadsetMixer, 0);
+
+// Effects to Mixers
+AudioConnection          noiseToLMixer(noise, 0, lUSBMixer, 0);
+AudioConnection          noiseToRMixer(noise, 0, rUSBMixer, 0);
+
+AudioConnection          tonesweepToLMixer(tonesweep, 0, lUSBMixer, 1);
+AudioConnection          tonesweepToRMixer(tonesweep, 0, rUSBMixer, 1);
+
+AudioConnection          lShifterToLMixer(lPitchShift, 0, lUSBMixer, 2);
+AudioConnection          rShifterToRMixer(rPitchShift, 0, rUSBMixer, 2);
+
+// Mixers to Outputs
+AudioConnection          lUSBMixerToUSBOut(lUSBMixer, 0, usbOutput, 0);
+AudioConnection          rUSBMixerToUSBOut(rUSBMixer, 0, usbOutput, 1);
+
+AudioConnection          lHeadsetMixerToI2SOut(lHeadsetMixer, 0, i2sOutput, 0);
+AudioConnection          rHeadsetMixerToI2SOut(rHeadsetMixer, 0, i2sOutput, 1);
+
 AudioControlSGTL5000     audioShield;     //xy=145,43
 
 #endif
