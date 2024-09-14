@@ -12,8 +12,12 @@ void setupPitchShift()
   pitchShiftGrainLength = msec;
 
   // the Granular effect requires memory to operate
-  lPitchShift.begin(granularMemory, GRANULAR_MEMORY_SIZE);
-  rPitchShift.begin(granularMemory, GRANULAR_MEMORY_SIZE);
+  granularLeft.begin(granularMemory, GRANULAR_MEMORY_SIZE);
+  granularRight.begin(granularMemory, GRANULAR_MEMORY_SIZE);
+
+  // TODO: DEV_MODE
+  devGranularLeft.begin(granularMemory, GRANULAR_MEMORY_SIZE);
+  devGranularRight.begin(granularMemory, GRANULAR_MEMORY_SIZE);
 }
 
 void setPitchShiftLevels()
@@ -25,8 +29,12 @@ void setPitchShiftLevels()
   // //ratio = powf(2.0, knobA2 * 6.0 - 3.0); // 0.125 to 8.0 -- uncomment for far too much range!
   // lPitchShift.setSpeed(ratio);
   // rPitchShift.setSpeed(ratio);
-  lPitchShift.setSpeed(pitchShiftRatio);
-  rPitchShift.setSpeed(pitchShiftRatio);
+  granularLeft.setSpeed(pitchShiftRatio);
+  granularRight.setSpeed(pitchShiftRatio);
+
+  // TODO: DEV_MODE
+  devGranularLeft.setSpeed(pitchShiftRatio);
+  devGranularRight.setSpeed(pitchShiftRatio);
 }
 
 // Pitch shift by continuously sampling grains and playing them at altered speed. The grainLength is specified in milliseconds, up to one third of the memory from begin();
@@ -37,8 +45,12 @@ void startPitchShift()
   /// 3. Pitch Acceleration - How fast we are changing the way we are changing the pitch
   setPitchShiftLevels();
 
-  lPitchShift.beginPitchShift(pitchShiftGrainLength);
-  rPitchShift.beginPitchShift(pitchShiftGrainLength);
+  granularLeft.beginPitchShift(pitchShiftGrainLength);
+  granularRight.beginPitchShift(pitchShiftGrainLength);
+
+  // TODO: DEV_MODE
+  devGranularLeft.beginPitchShift(pitchShiftGrainLength);
+  devGranularRight.beginPitchShift(pitchShiftGrainLength);
 }
 
 void maintainShift()
@@ -48,6 +60,10 @@ void maintainShift()
 
 void stopPitchShift()
 {
-  lPitchShift.stop();
-  rPitchShift.stop();
+  granularLeft.stop();
+  granularRight.stop();
+
+  // TODO: DEV_MODE
+  devGranularLeft.stop();
+  devGranularRight.stop();
 }

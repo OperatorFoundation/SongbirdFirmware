@@ -56,43 +56,154 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, OLED_RESET);  // d
 #define HPAMP_SHUTDOWN 36
 
 // AUDIO
-AudioSynthNoiseWhite     noise;         //xy=62,259
-AudioInputUSB            usbInput;
-AudioInputI2S            i2sInput;           //xy=62,368
-AudioSynthToneSweep      tonesweep;     //xy=69,313
-AudioEffectGranular      lPitchShift;      //xy=254,351
-AudioEffectGranular      rPitchShift;      //xy=254,388
-AudioMixer4              lUSBMixer;         //xy=462,271
-AudioMixer4              rUSBMixer;         //xy=462,345
-AudioMixer4              lHeadsetMixer;         //xy=462,271
-AudioMixer4              rHeadsetMixer;         //xy=462,345             
-AudioOutputUSB           usbOutput;           //xy=685,277
-AudioOutputI2S           i2sOutput;           //xy=686,338
+#include <Audio.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
 
-// Input from Headset
-AudioConnection          i2sInputToLShifter(i2sInput, 0, lPitchShift, 0);
-AudioConnection          i2sInputToRShifter(i2sInput, 1, rPitchShift, 0);
+// GUItool: begin automatically generated code
+// AudioInputI2S            inputFromHeadset;           //xy=111.5,264
+// AudioInputUSB            inputFromUSB;           //xy=212,608
+// AudioSynthNoiseWhite     noise;         //xy=403,345
+// AudioEffectGranular      granularLeft;      //xy=413,241
+// AudioEffectGranular      granularRight;      //xy=414,289
+// AudioSynthToneSweep      tonesweep;     //xy=414,398
+// AudioMixer4              leftHeadsetMixer;         //xy=559,574
+// AudioMixer4              rightHeadsetMixer;         //xy=559,660
+// AudioMixer4              leftUSBMixer;         //xy=798,263
+// AudioMixer4              rightUSBMixer;         //xy=799,341
+// AudioOutputI2S           outputToHeadset;           //xy=878,623
+// AudioOutputUSB           outputToUSB;           //xy=1088,307
 
-// Input from USB
-AudioConnection          usbInputToLHeadsetMixer(usbInput, 0, lHeadsetMixer, 0);
-AudioConnection          usbInputToRHeadsetMixer(usbInput, 1, rHeadsetMixer, 0);
+// AudioConnection          patchCord1(inputFromHeadset, 0, granularLeft, 0);
+// AudioConnection          patchCord2(inputFromHeadset, 1, granularRight, 0);
 
-// Effects to Mixers
-AudioConnection          noiseToLMixer(noise, 0, lUSBMixer, 0);
-AudioConnection          noiseToRMixer(noise, 0, rUSBMixer, 0);
+// AudioConnection          patchCord3(inputFromUSB, 0, leftHeadsetMixer, 0);
+// AudioConnection          patchCord4(inputFromUSB, 1, rightHeadsetMixer, 0);
 
-AudioConnection          tonesweepToLMixer(tonesweep, 0, lUSBMixer, 1);
-AudioConnection          tonesweepToRMixer(tonesweep, 0, rUSBMixer, 1);
+// AudioConnection          patchCord5(noise, 0, leftUSBMixer, 2);
+// AudioConnection          patchCord6(noise, 0, rightUSBMixer, 2);
 
-AudioConnection          lShifterToLMixer(lPitchShift, 0, lUSBMixer, 2);
-AudioConnection          rShifterToRMixer(rPitchShift, 0, rUSBMixer, 2);
+// AudioConnection          patchCord7(granularLeft, 0, leftUSBMixer, 1);
+// AudioConnection          patchCord8(granularRight, 0, rightUSBMixer, 1);
 
-// Mixers to Outputs
-AudioConnection          lUSBMixerToUSBOut(lUSBMixer, 0, usbOutput, 0);
-AudioConnection          rUSBMixerToUSBOut(rUSBMixer, 0, usbOutput, 1);
+// AudioConnection          patchCord9(tonesweep, 0, leftUSBMixer, 3);
+// AudioConnection          patchCord10(tonesweep, 0, rightUSBMixer, 3);
 
-AudioConnection          lHeadsetMixerToI2SOut(lHeadsetMixer, 0, i2sOutput, 0);
-AudioConnection          rHeadsetMixerToI2SOut(rHeadsetMixer, 0, i2sOutput, 1);
+// AudioConnection          patchCord11(leftHeadsetMixer, 0, outputToHeadset, 0);
+// AudioConnection          patchCord12(rightHeadsetMixer, 0, outputToHeadset, 1);
+
+// AudioConnection          patchCord13(leftUSBMixer, 0, outputToUSB, 0);
+// AudioConnection          patchCord14(rightUSBMixer, 0, outputToUSB, 1);
+// GUItool: end automatically generated code
+
+#include <Audio.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
+
+// GUItool: begin automatically generated code
+AudioInputI2S            inputFromHeadset;           //xy=111.5,264
+AudioInputUSB            inputFromUSB;           //xy=115,595
+AudioSynthNoiseWhite     noise;         //xy=407,325
+AudioEffectGranular      granularLeft;      //xy=412,252
+AudioEffectGranular      granularRight;      //xy=414,289
+AudioSynthToneSweep      tonesweep;     //xy=417,361
+AudioEffectGranular      devGranularLeft;      //xy=546,460
+AudioEffectGranular      devGranularRight;      //xy=549,505
+AudioMixer4              leftHeadsetMixer;         //xy=559,574
+AudioMixer4              rightHeadsetMixer;         //xy=559,660
+AudioMixer4              leftUSBMixer;         //xy=798,263
+AudioMixer4              rightUSBMixer;         //xy=799,341
+AudioOutputI2S           outputToHeadset;           //xy=878,623
+AudioOutputUSB           outputToUSB;           //xy=1088,307
+
+// Headset to effect
+AudioConnection          patchCord1(inputFromHeadset, 0, granularLeft, 0);
+AudioConnection          patchCord2(inputFromHeadset, 1, granularRight, 0);
+
+// USB to headset mixer
+AudioConnection          patchCord3(inputFromUSB, 0, leftHeadsetMixer, 0);
+AudioConnection          patchCord5(inputFromUSB, 1, rightHeadsetMixer, 0);
+
+// USB to effect
+AudioConnection          patchCord4(inputFromUSB, 0, devGranularLeft, 0);
+AudioConnection          patchCord6(inputFromUSB, 1, devGranularRight, 0);
+
+// Effects to USB mixer
+AudioConnection          patchCord7(noise, 0, leftUSBMixer, 2);
+AudioConnection          patchCord8(noise, 0, rightUSBMixer, 2);
+AudioConnection          patchCord9(granularLeft, 0, leftUSBMixer, 1);
+AudioConnection          patchCord10(granularRight, 0, rightUSBMixer, 1);
+AudioConnection          patchCord11(tonesweep, 0, leftUSBMixer, 3);
+AudioConnection          patchCord12(tonesweep, 0, rightUSBMixer, 3);
+AudioConnection          patchCord13(devGranularLeft, 0, leftUSBMixer, 0);
+AudioConnection          patchCord14(devGranularRight, 0, rightUSBMixer, 0);
+
+// Headset mixer to headset
+AudioConnection          patchCord15(leftHeadsetMixer, 0, outputToHeadset, 0);
+AudioConnection          patchCord16(rightHeadsetMixer, 0, outputToHeadset, 1);
+
+
+// USB mixer to USB
+AudioConnection          patchCord17(leftUSBMixer, 0, outputToUSB, 0);
+AudioConnection          patchCord18(rightUSBMixer, 0, outputToUSB, 1);
+// GUItool: end automatically generated code
+
+
+
+
+
+// AudioSynthNoiseWhite     noise;         //xy=62,259
+// AudioInputUSB            usbInput;
+// AudioInputI2S            i2sInput;           //xy=62,368
+// AudioSynthToneSweep      tonesweep;     //xy=69,313
+// AudioEffectGranular      lPitchShift;      //xy=254,351
+// AudioEffectGranular      rPitchShift;      //xy=254,388
+// AudioMixer4              lUSBMixer;         //xy=462,271
+// AudioMixer4              rUSBMixer;         //xy=462,345
+// AudioMixer4              lHeadsetMixer;         //xy=462,271
+// AudioMixer4              rHeadsetMixer;         //xy=462,345             
+// AudioOutputUSB           usbOutput;           //xy=685,277
+// AudioOutputI2S           i2sOutput;           //xy=686,338
+
+// // Input from Headset to pitch shifter effect
+// AudioConnection          headsetInputToLShifter(i2sInput, 0, lPitchShift, 0);
+// AudioConnection          headsetInputToRShifter(i2sInput, 1, rPitchShift, 0);
+
+// // Input from Headset to USB Mixer
+// AudioConnection          headsetInputToLUSBMixer();
+// AudioConnection          headsetInputToRUSBMixer();
+
+// // Input from USB to Headset Mixer
+// AudioConnection          usbInputToLHeadsetMixer(usbInput, 0, lHeadsetMixer, 0);
+// AudioConnection          usbInputToRHeadsetMixer(usbInput, 1, rHeadsetMixer, 0);
+
+// // Effects to Mixers
+
+// // Noise Effect to USB Mixer
+// AudioConnection          noiseToLUSBMixer(noise, 0, lUSBMixer, 0);
+// AudioConnection          noiseToRUSBMixer(noise, 0, rUSBMixer, 0);
+
+// // Tonesweep Effect to USB Mixer
+// AudioConnection          tonesweepToLUSBMixer(tonesweep, 0, lUSBMixer, 1);
+// AudioConnection          tonesweepToRUSBMixer(tonesweep, 0, rUSBMixer, 1);
+
+// // Pitch Shift Effect to USB Mixer
+// AudioConnection          lShifterToLUSBMixer(lPitchShift, 0, lUSBMixer, 2);
+// AudioConnection          rShifterToUSBRMixer(rPitchShift, 0, rUSBMixer, 2);
+
+// // Mixers to Output
+
+// // USB Mixers to USB Out
+// AudioConnection          lUSBMixerToUSBOut(lUSBMixer, 0, usbOutput, 0);
+// AudioConnection          rUSBMixerToUSBOut(rUSBMixer, 0, usbOutput, 1);
+
+// // HeadsetMixer to Headset Output
+// AudioConnection          lHeadsetMixerToHeadsetOut(lHeadsetMixer, 0, i2sOutput, 0);
+// AudioConnection          rHeadsetMixerToHeadsetOut(rHeadsetMixer, 0, i2sOutput, 1);
 
 AudioControlSGTL5000     audioShield;     //xy=145,43
 

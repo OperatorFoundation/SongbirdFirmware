@@ -157,8 +157,7 @@ void loopModulation()
       maintainParty();
       break;
     case NONE:
-      // TODO: Handle NONE case
-      // Serial.println("Current sound mode is NONE");
+      passthroughMode();
       break;
   }
 }
@@ -192,6 +191,13 @@ void partyMode()
 void maintainParty()
 {
   maintainTonesweep();
+}
+
+void passthroughMode()
+{
+  stopPitchShift();
+  stopNoise();
+  // Tonesweep will stop on its own if not being maintained
 }
 
 void loop()
