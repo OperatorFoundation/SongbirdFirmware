@@ -9,6 +9,10 @@
 #include <Adafruit_NeoPixel.h>  // https://learn.adafruit.com/adafruit-neopixel-uberguide/arduino-library-use
 #include <Bounce2.h>            // https://www.pjrc.com/teensy/td_libs_Bounce.html
 
+// Use these with the Teensy 3.5 & 3.6 & 4.1 SD card
+#define SDCARD_CS_PIN    BUILTIN_SDCARD
+File audioFile;
+
 // LEDs
 #define LED_1 9
 #define LED_2 10
@@ -56,11 +60,6 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, OLED_RESET);  // d
 #define HPAMP_SHUTDOWN 36
 
 // AUDIO
-#include <Audio.h>
-#include <Wire.h>
-#include <SPI.h>
-#include <SD.h>
-#include <SerialFlash.h>
 
 // GUItool: begin automatically generated code
 // AudioInputI2S            inputFromHeadset;           //xy=111.5,264
@@ -98,15 +97,10 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, OLED_RESET);  // d
 // AudioConnection          patchCord14(rightUSBMixer, 0, outputToUSB, 1);
 // GUItool: end automatically generated code
 
-#include <Audio.h>
-#include <Wire.h>
-#include <SPI.h>
-#include <SD.h>
-#include <SerialFlash.h>
-
 // GUItool: begin automatically generated code
 AudioInputI2S            inputFromHeadset;           //xy=111.5,264
 AudioInputUSB            inputFromUSB;           //xy=115,595
+AudioRecordQueue         audioQueue;  // Queue for recording audio
 AudioSynthNoiseWhite     noise;         //xy=407,325
 AudioEffectGranular      granularLeft;      //xy=412,252
 AudioEffectGranular      granularRight;      //xy=414,289
@@ -128,7 +122,7 @@ AudioConnection          patchCord2(inputFromHeadset, 1, granularRight, 0);
 AudioConnection          patchCord3(inputFromUSB, 0, leftHeadsetMixer, 0);
 AudioConnection          patchCord5(inputFromUSB, 1, rightHeadsetMixer, 0);
 
-// USB to effect
+// USB to effect (DEV_MODE)
 AudioConnection          patchCord4(inputFromUSB, 0, devGranularLeft, 0);
 AudioConnection          patchCord6(inputFromUSB, 1, devGranularRight, 0);
 
@@ -146,15 +140,15 @@ AudioConnection          patchCord14(devGranularRight, 0, rightUSBMixer, 0);
 AudioConnection          patchCord15(leftHeadsetMixer, 0, outputToHeadset, 0);
 AudioConnection          patchCord16(rightHeadsetMixer, 0, outputToHeadset, 1);
 
-
 // USB mixer to USB
 AudioConnection          patchCord17(leftUSBMixer, 0, outputToUSB, 0);
 AudioConnection          patchCord18(rightUSBMixer, 0, outputToUSB, 1);
+
+// USB Mixer to AudioQueue (SD card recording)
+AudioConnection          patchCord19(leftUSBMixer, 0, audioQueue, 0);
+AudioConnection          patchCord20(rightUSBMixer, 0, audioQueue, 1);
+
 // GUItool: end automatically generated code
-
-
-
-
 
 // AudioSynthNoiseWhite     noise;         //xy=62,259
 // AudioInputUSB            usbInput;
