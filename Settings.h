@@ -8,6 +8,7 @@
 #include <Adafruit_SSD1306.h>   // https://learn.adafruit.com/monochrome-oled-breakouts/wiring-128x32-i2c-display
 #include <Adafruit_NeoPixel.h>  // https://learn.adafruit.com/adafruit-neopixel-uberguide/arduino-library-use
 #include <Bounce2.h>            // https://www.pjrc.com/teensy/td_libs_Bounce.html
+#include <WaveFile.h>
 
 // Use these with the Teensy 3.5 & 3.6 & 4.1 SD card
 #define SDCARD_CS_PIN    BUILTIN_SDCARD

@@ -35,7 +35,8 @@ void setup()
 
 void loop()
 {
-  recordAudio();
+  // TODO: Record and stop based on button push
+  // recordAudio();
   loopModulation();
 }
 
@@ -168,6 +169,8 @@ void passthroughMode()
 
 void recordAudio()
 {
+  // TODO: Red pulsing LED to indicate that we are recording
+  // FIXME: Close the file
   // Is the SD card available, and is there data in the queue?
   if (sdFound && audioQueue.available() >= 1)
   {
@@ -230,6 +233,7 @@ void setupHardware()
   {
     Serial.println("SD Card initialization failed!");
     // Turn Pixel red
+    // TODO: Blink for errors
     pixels.setPixelColor(0, pixels.Color(10, 0, 0));
     pixels.show();
     sdFound = false;
