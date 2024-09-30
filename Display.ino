@@ -1,5 +1,9 @@
 #include "Settings.h"
 
+void setupDisplay()
+{
+    display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
+}
 
 void displayText(String text)
 {

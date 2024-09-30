@@ -1,14 +1,16 @@
-#include "mixer.h"
-#include "AudioStream.h"
-#include "usb_audio.h"
-#ifndef SETTINGS_h
-#define SETTINGS_h
+#ifndef _SETTINGS_H_
+#define _SETTINGS_H_
+
 #include <Arduino.h>
 #include <Adafruit_GFX.h>       // https://learn.adafruit.com/adafruit-gfx-graphics-library/overview
 #include <Adafruit_SSD1306.h>   // https://learn.adafruit.com/monochrome-oled-breakouts/wiring-128x32-i2c-display
 #include <Adafruit_NeoPixel.h>  // https://learn.adafruit.com/adafruit-neopixel-uberguide/arduino-library-use
 #include <Bounce2.h>            // https://www.pjrc.com/teensy/td_libs_Bounce.html
-#include <WaveFile.h>
+//#include <WaveFile.h>
+
+#include "mixer.h"
+#include "AudioStream.h"
+#include "usb_audio.h"
 
 // Use these with the Teensy 3.5 & 3.6 & 4.1 SD card
 #define SDCARD_CS_PIN    BUILTIN_SDCARD
@@ -62,144 +64,75 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, OLED_RESET);  // d
 
 // AUDIO
 
-// GUItool: begin automatically generated code
-// AudioInputI2S            inputFromHeadset;           //xy=111.5,264
-// AudioInputUSB            inputFromUSB;           //xy=212,608
-// AudioSynthNoiseWhite     noise;         //xy=403,345
-// AudioEffectGranular      granularLeft;      //xy=413,241
-// AudioEffectGranular      granularRight;      //xy=414,289
-// AudioSynthToneSweep      tonesweep;     //xy=414,398
-// AudioMixer4              leftHeadsetMixer;         //xy=559,574
-// AudioMixer4              rightHeadsetMixer;         //xy=559,660
-// AudioMixer4              leftUSBMixer;         //xy=798,263
-// AudioMixer4              rightUSBMixer;         //xy=799,341
-// AudioOutputI2S           outputToHeadset;           //xy=878,623
-// AudioOutputUSB           outputToUSB;           //xy=1088,307
+// Codecs
+AudioControlSGTL5000 audioShield;
 
-// AudioConnection          patchCord1(inputFromHeadset, 0, granularLeft, 0);
-// AudioConnection          patchCord2(inputFromHeadset, 1, granularRight, 0);
+// Inputs
+AudioInputI2S inputFromHeadset; // Headset microphone input (production)
+AudioInputUSB inputFromUSB; // USB headphones input
 
-// AudioConnection          patchCord3(inputFromUSB, 0, leftHeadsetMixer, 0);
-// AudioConnection          patchCord4(inputFromUSB, 1, rightHeadsetMixer, 0);
+// Generators
+AudioPlaySdWav player; // Wav player input (dev)
+AudioSynthNoiseWhite noise; // White noise effect
+AudioSynthToneSweep tonesweep; // Tonesweep effect
 
-// AudioConnection          patchCord5(noise, 0, leftUSBMixer, 2);
-// AudioConnection          patchCord6(noise, 0, rightUSBMixer, 2);
+// Effects
+AudioEffectGranular pitchShifter; // Pitch shift effect
 
-// AudioConnection          patchCord7(granularLeft, 0, leftUSBMixer, 1);
-// AudioConnection          patchCord8(granularRight, 0, rightUSBMixer, 1);
+// Mixers
+AudioMixer4 leftHeadphonesMixer; // Output mixer for left channel of headset headphones
+AudioMixer4 rightHeadphonesMixer; // Output mixer for right channel of headset headphones
+AudioMixer4 productionDevMixer; // Input mixer to switch between production and dev audio signals
+AudioMixer4 effectsMixer; // Output mixer for USB microphone audio output sourced from either headset microphone (production) or wav player (dev)
 
-// AudioConnection          patchCord9(tonesweep, 0, leftUSBMixer, 3);
-// AudioConnection          patchCord10(tonesweep, 0, rightUSBMixer, 3);
+// Outputs
+AudioOutputI2S outputToHeadset; // Headset headphones output
+AudioOutputUSB outputToUSB; // USB microphone output
 
-// AudioConnection          patchCord11(leftHeadsetMixer, 0, outputToHeadset, 0);
-// AudioConnection          patchCord12(rightHeadsetMixer, 0, outputToHeadset, 1);
+// Connections
 
-// AudioConnection          patchCord13(leftUSBMixer, 0, outputToUSB, 0);
-// AudioConnection          patchCord14(rightUSBMixer, 0, outputToUSB, 1);
-// GUItool: end automatically generated code
+// Headset -> Phone:
+// USB headphones input -> mixer -> Headset headphones output
 
-// GUItool: begin automatically generated code
-AudioInputI2S            inputFromHeadset;           //xy=111.5,264
-AudioInputUSB            inputFromUSB;           //xy=115,595
-AudioRecordQueue         audioQueue;  // Queue for recording audio
-AudioSynthNoiseWhite     noise;         //xy=407,325
-AudioEffectGranular      granularLeft;      //xy=412,252
-AudioEffectGranular      granularRight;      //xy=414,289
-AudioSynthToneSweep      tonesweep;     //xy=417,361
-AudioEffectGranular      devGranularLeft;      //xy=546,460
-AudioEffectGranular      devGranularRight;      //xy=549,505
-AudioMixer4              leftHeadsetMixer;         //xy=559,574
-AudioMixer4              rightHeadsetMixer;         //xy=559,660
-AudioMixer4              leftUSBMixer;         //xy=798,263
-AudioMixer4              rightUSBMixer;         //xy=799,341
-AudioOutputI2S           outputToHeadset;           //xy=878,623
-AudioOutputUSB           outputToUSB;           //xy=1088,307
+// (USB headphones input -> mixer) -> Headset headphones output. Separate mixers for left and right channels so that we keep the stereo signals separate.
+AudioConnection patchCordUSBLeftMixer(inputFromUSB, 0, leftHeadphonesMixer, 0); // USB headphones input left channel takes left headphones mixer slot 0
+AudioConnection patchCordUSBRightMixer(inputFromUSB, 1, rightHeadphonesMixer, 0); // USB headphones input right channel takes right headphones mixer slot 1
 
-// Headset to effect
-AudioConnection          patchCord1(inputFromHeadset, 0, granularLeft, 0);
-AudioConnection          patchCord2(inputFromHeadset, 1, granularRight, 0);
+// USB headphones input -> (mixer -> Headset headphones output). Separate mixers for left and right channels so that we keep the stereo signals separate.
+AudioConnection patchCordLeftMixerHeadset(leftHeadphonesMixer, 0, outputToHeadset, 0); // left headphone channel takes headset headphones output slot 0
+AudioConnection patchCordRightMixerHeadset(rightHeadphonesMixer, 0, outputToHeadset, 1); // right headphone channel takes headset headphones output slot 1
 
-// USB to headset mixer
-AudioConnection          patchCord3(inputFromUSB, 0, leftHeadsetMixer, 0);
-AudioConnection          patchCord5(inputFromUSB, 1, rightHeadsetMixer, 0);
+// Phone/SD -> Headset:
+// Headset microphone input -> effects -> mixer -> USB microphone output  (production mode)
+// Wav file player input -> effects -> mixer -> USB microphone output (DEV_MODE)
 
-// USB to effect (DEV_MODE)
-AudioConnection          patchCord4(inputFromUSB, 0, devGranularLeft, 0);
-AudioConnection          patchCord6(inputFromUSB, 1, devGranularRight, 0);
+// Input connections: Headset microphone input / Wave file player input -> mixer; USB headphones input -> mixer.
 
-// Effects to USB mixer
-AudioConnection          patchCord7(noise, 0, leftUSBMixer, 2);
-AudioConnection          patchCord8(noise, 0, rightUSBMixer, 2);
-AudioConnection          patchCord9(granularLeft, 0, leftUSBMixer, 1);
-AudioConnection          patchCord10(granularRight, 0, rightUSBMixer, 1);
-AudioConnection          patchCord11(tonesweep, 0, leftUSBMixer, 3);
-AudioConnection          patchCord12(tonesweep, 0, rightUSBMixer, 3);
-AudioConnection          patchCord13(devGranularLeft, 0, leftUSBMixer, 0);
-AudioConnection          patchCord14(devGranularRight, 0, rightUSBMixer, 0);
+// (Headset microphone input -> mixer) -> effects -> mixer -> USB microphone output  (production mode)
+AudioConnection patchCordHeadsetPDMix(inputFromHeadset, 0, productionDevMixer, 0); // Headset microphone takes production/dev mixer slot 0
 
-// Headset mixer to headset
-AudioConnection          patchCord15(leftHeadsetMixer, 0, outputToHeadset, 0);
-AudioConnection          patchCord16(rightHeadsetMixer, 0, outputToHeadset, 1);
+// (Wav file player input -> mixer) -> effects -> mixer -> USB microphone output (DEV_MODE)
+AudioConnection patchCordWavPDMix(player, 0, productionDevMixer, 1); // Wav player takes production/dev mixer slot 1
 
-// USB mixer to USB
-AudioConnection          patchCord17(leftUSBMixer, 0, outputToUSB, 0);
-AudioConnection          patchCord18(rightUSBMixer, 0, outputToUSB, 1);
+// Effect connections - all effects are on the Headset microphone input -> USB headphones output signal path.
 
-// USB Mixer to AudioQueue (SD card recording)
-AudioConnection          patchCord19(leftUSBMixer, 0, audioQueue, 0);
-AudioConnection          patchCord20(rightUSBMixer, 0, audioQueue, 1);
+// Effects to mixers: noise -> mixer; pitch shifter -> mixer (production); pitch shifter -> mixer (dev); tone sweep -> mixer.
 
-// GUItool: end automatically generated code
+// Headset / wav input -> (mixer -> pitch shift) -> mixer -> USB microphone output
+AudioConnection patchCordPDPitchshift(productionDevMixer, 0, pitchShifter, 0); // production/dev mixer takes pitchShifter slot 0
 
-// AudioSynthNoiseWhite     noise;         //xy=62,259
-// AudioInputUSB            usbInput;
-// AudioInputI2S            i2sInput;           //xy=62,368
-// AudioSynthToneSweep      tonesweep;     //xy=69,313
-// AudioEffectGranular      lPitchShift;      //xy=254,351
-// AudioEffectGranular      rPitchShift;      //xy=254,388
-// AudioMixer4              lUSBMixer;         //xy=462,271
-// AudioMixer4              rUSBMixer;         //xy=462,345
-// AudioMixer4              lHeadsetMixer;         //xy=462,271
-// AudioMixer4              rHeadsetMixer;         //xy=462,345             
-// AudioOutputUSB           usbOutput;           //xy=685,277
-// AudioOutputI2S           i2sOutput;           //xy=686,338
+// Headset / wav input -> mixer -> (pitch shift -> mixer) -> USB microphone output
+AudioConnection patchCordPitchshiftEffectsMix(pitchShifter, 0, effectsMixer, 0); // Pitchshifted Headest / wav input takes effects mixer slot 0
 
-// // Input from Headset to pitch shifter effect
-// AudioConnection          headsetInputToLShifter(i2sInput, 0, lPitchShift, 0);
-// AudioConnection          headsetInputToRShifter(i2sInput, 1, rPitchShift, 0);
+// (noise -> mixer) -> USB microphone output
+AudioConnection patchCordNoiseEffectsMix(noise, 0, effectsMixer, 1); // Noise takes effects mixer slot 1
 
-// // Input from Headset to USB Mixer
-// AudioConnection          headsetInputToLUSBMixer();
-// AudioConnection          headsetInputToRUSBMixer();
+// (tone sweep -> mixer) -> USB microphone output
+AudioConnection patchCordTonesweepEffectsMix(tonesweep, 0, effectsMixer, 2); // Tones sweep takes effects mixer slot 2
 
-// // Input from USB to Headset Mixer
-// AudioConnection          usbInputToLHeadsetMixer(usbInput, 0, lHeadsetMixer, 0);
-// AudioConnection          usbInputToRHeadsetMixer(usbInput, 1, rHeadsetMixer, 0);
+// Output connections: all outputs have a mixer in front of them, which is a recommended best practice for Teensy audio programming. Don't forget to set the mixer levels.
 
-// // Effects to Mixers
-
-// // Noise Effect to USB Mixer
-// AudioConnection          noiseToLUSBMixer(noise, 0, lUSBMixer, 0);
-// AudioConnection          noiseToRUSBMixer(noise, 0, rUSBMixer, 0);
-
-// // Tonesweep Effect to USB Mixer
-// AudioConnection          tonesweepToLUSBMixer(tonesweep, 0, lUSBMixer, 1);
-// AudioConnection          tonesweepToRUSBMixer(tonesweep, 0, rUSBMixer, 1);
-
-// // Pitch Shift Effect to USB Mixer
-// AudioConnection          lShifterToLUSBMixer(lPitchShift, 0, lUSBMixer, 2);
-// AudioConnection          rShifterToUSBRMixer(rPitchShift, 0, rUSBMixer, 2);
-
-// // Mixers to Output
-
-// // USB Mixers to USB Out
-// AudioConnection          lUSBMixerToUSBOut(lUSBMixer, 0, usbOutput, 0);
-// AudioConnection          rUSBMixerToUSBOut(rUSBMixer, 0, usbOutput, 1);
-
-// // HeadsetMixer to Headset Output
-// AudioConnection          lHeadsetMixerToHeadsetOut(lHeadsetMixer, 0, i2sOutput, 0);
-// AudioConnection          rHeadsetMixerToHeadsetOut(rHeadsetMixer, 0, i2sOutput, 1);
-
-AudioControlSGTL5000     audioShield;     //xy=145,43
+// ((Headset microphone / wav) -> pitch shift) / noise / tone sweep -> (mixer -> Headset headphones output)
+AudioConnection patchCordEffectsUSB(effectsMixer, 0, outputToUSB, 0); // mixed effects output takes USB microphone output slot 0
 
 #endif

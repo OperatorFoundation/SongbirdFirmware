@@ -1,4 +1,3 @@
-
 float minNoiseAmplitude = 0.1;
 float maxNoiseAmplitude = 1.0; 
 float noiseAmplitude = 0.0;
