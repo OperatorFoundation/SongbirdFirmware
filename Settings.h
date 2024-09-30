@@ -12,10 +12,6 @@
 #include "AudioStream.h"
 #include "usb_audio.h"
 
-// Use these with the Teensy 3.5 & 3.6 & 4.1 SD card
-#define SDCARD_CS_PIN    BUILTIN_SDCARD
-File audioFile;
-
 // LEDs
 #define LED_1 9
 #define LED_2 10

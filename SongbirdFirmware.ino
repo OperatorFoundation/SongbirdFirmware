@@ -7,6 +7,7 @@
 #include <Audio.h>
 
 #include "Settings.h"
+#include "config.h"
 
 boolean sdFound = false;
 
@@ -24,6 +25,9 @@ enum SoundMode
 
 void setup()
 {
+  Serial.begin(115200);
+  Serial.println("Setting up...");
+  
   setupHardware();
   
   setupPitchShift();
@@ -35,15 +39,15 @@ void setup()
 
 void loop()
 {
-  // TODO: Record and stop based on button push
-  // recordAudio();
+  #ifdef DEV_MODE
+  playSdAudio("test1.wav");
+  #endif
+  
   loopModulation();
 }
 
 void setupHardware() 
 {
-  Serial.begin(115200);
-
   setupButtons();
 
   setupLights();
