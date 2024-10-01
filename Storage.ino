@@ -1,22 +1,8 @@
+#include <SD.h>
+
 #define SDCARD_CS_PIN    BUILTIN_SDCARD
 #define SDCARD_MOSI_PIN  7
 #define SDCARD_SCK_PIN   14
-
-const int numTests = 10;
-const char *tests[numTests][11] = {
-  "test1_1.wav",  
-  "test1_2.wav",  
-  "test1_3.wav",  
-  "test2_1.wav",  
-  "test2_2.wav",  
-  "test2_3.wav",  
-  "test3_1.wav",  
-  "test3_2.wav",  
-  "test3_3.wav",  
-  "test4_1.wav",
-  "test4_2.wav",
-  "test4_3.wav",
-};
 
 int currentTest = 0;
 
@@ -39,27 +25,90 @@ void setupStorage()
 
 const char *getTestFile()
 {
-  return *tests[currentTest];
+  File root = SD.open("/");
+  
+  int index = 0;
+  File firstTest = root.openNextFile();
+  if (!firstTest)
+  {
+    root.close();
+    return 0;        
+  }
+
+  while (firstTest.name()[0] == '.')
+  {
+    firstTest.close();
+    firstTest = root.openNextFile();
+    if (!firstTest)
+    {
+      root.close();
+      return 0;        
+    }
+  }
+
+  if(currentTest == 0)
+  {
+    const char *name = firstTest.name();
+    firstTest.close();
+    root.close();
+    return name;
+  }
+
+  File test;
+  do
+  {
+    test = root.openNextFile();
+    index++;
+    
+    if(!test)
+    {
+      const char *name = firstTest.name();
+      root.close();
+      currentTest = 0;
+      firstTest.close();
+      return name;
+    }
+
+    while (test.name()[0] == '.')
+    {
+      test = root.openNextFile();
+      if(!test)
+      {
+        const char *name = firstTest.name();
+        root.close();
+        currentTest = 0;
+        firstTest.close();
+        return name;
+      }
+    }
+  }
+  while(index < currentTest);
+
+  const char *name = test.name();
+  root.close();
+  firstTest.close();
+  test.close();
+  return name;
 }
 
 void incrementCurrentTest()
 {
   currentTest++;
-
-  if (currentTest >= numTests)
-  {
-    currentTest = 0;
-  }
-
-  Serial.print("Playing test file ");
-  Serial.println(getTestFile());
   dirtyDisplay = true;
 }
 
 void playSdAudio(const char *filename)
 {
+  if (!filename)
+  {
+    return;
+  }
+  
   if (!player.isPlaying())
   {
+    Serial.print("Playing ");
+    Serial.println(filename);
+    
     player.play(filename);
 
     // Delay to wait for the player to start playing and toggle on the isPlaying() state.

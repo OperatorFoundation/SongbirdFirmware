@@ -22,7 +22,7 @@ void refreshDisplay()
   dirtyDisplay = true;
 }
 
-void displayText(String text)
+void displayLines(int lineCount, String text[])
 {
   // Clear the buffer.
   display.clearDisplay();
@@ -31,7 +31,12 @@ void displayText(String text)
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0,0);
-  display.println(text);
+
+  for(int index = 0; index < lineCount; index++)
+  {
+    display.println(text[index]);
+  }
+  
   display.setCursor(0,0);
   display.display(); // actually display all of the above
 }
@@ -64,11 +69,23 @@ void updateDisplay()
   if (isDevModeEnabled())
   {
     display.println("(DEV)");
+    const char *testFile = getTestFile();
+    if (!testFile)
+    {
+      display.println("No test file");      
+    }
+    else
+    {
+      display.println(testFile);      
+    }    
   }
   else
   {
     display.println();
+    display.println();
   }
+
+  display.display();
 }
 
 void testDisplay()
