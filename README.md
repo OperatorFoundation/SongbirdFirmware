@@ -15,3 +15,7 @@ Audio
 Bounce2
 SD
 
+# Tests
+
+Place contents of tests/ on SD card
+
