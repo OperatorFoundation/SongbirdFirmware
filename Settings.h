@@ -20,25 +20,6 @@
 #define NUMPIXELS  1
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
-// Buttons
-#define SW_LEFT_PIN 26
-#define SW_RIGHT_PIN 29
-#define SW_UP_PIN 28
-#define SW_DOWN_PIN 27
-
-const int buttonPins[] = {SW_LEFT_PIN, SW_RIGHT_PIN, SW_UP_PIN, SW_DOWN_PIN};
-const int numButtons = sizeof(buttonPins) / sizeof(buttonPins[0]);
-
-// Bounce leftButton = Bounce(SW_LEFT_PIN, 15);
-// Bounce downButton = Bounce(SW_DOWN_PIN, 15);
-// Bounce upButton = Bounce(SW_UP_PIN, 15);
-// Bounce rightButton = Bounce(SW_RIGHT_PIN, 15);
-
-// uint8_t leftButtonOff;
-// uint8_t downButtonOff;
-// uint8_t upButtonOff;
-// uint8_t rightButtonOff;
-
 // Display
 #define SCREEN_WIDTH 128    // OLED display width, in p ixels
 #define SCREEN_HEIGHT 32    // OLED display height, in pixels

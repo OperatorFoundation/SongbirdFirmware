@@ -1,4 +1,3 @@
-
 /// Create a continuously varying (in frequency) sine wave
 /// Note: Uses excessive CPU time.
 /// The frequency actually changes in discrete steps every 128 samples (2.9 ms).

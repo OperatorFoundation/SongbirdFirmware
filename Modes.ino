@@ -1,3 +1,5 @@
+#include "Modes.h"
+
 void startModulation()
 {
   SoundMode mode = getCurrentMode();
@@ -45,46 +47,46 @@ void loopModulation()
   }
 }
 
-// Function to get the current mode based on the last button pressed
-SoundMode getCurrentMode()
+void incrementMode()
 {
-  // Update each Bounce object
-  for (int index = 0; index < numButtons; index++) 
+  switch (currentMode)
   {
-    buttons[index].update();  // Update the state of the Bounce object
+    case NOISE:
+      currentMode = PITCHSHIFT;
+      Serial.println("Pitch Shift Selected");
+      displayText("Pitch Shift");
+      break;
+           
+    case PITCHSHIFT:
+      currentMode = TONESWEEP;
+      Serial.println("Tone Sweep Selected");
+      displayText("Tone Sweep");      
+      break;
+    
+    case TONESWEEP:
+      currentMode = PARTY;
+      Serial.println("PARTY MODE!!");
+      displayText("PARTY MODE Selected!!");
+      break;    
+    
+    case PARTY:
+      currentMode = NONE;
+      Serial.println("No Mode Selected");
+      displayText("No Mode Selected");      
+      break;
+    
+    case NONE:
+      currentMode = NOISE;
+      Serial.println("Noise Mode Selected");
+      displayText("Noise Mode");
+      break;
 
-    if (buttons[index].released()) { // Button was just released
-      // Serial.print("Button ");
-      // Serial.print(index);
-      // Serial.println(" was just released.");
-
-      switch (index) 
-      {
-        case 0: // Button 0 - Left Button: NOISE
-          Serial.println("Noise Mode Selected");
-          displayText("Noise Mode");
-          return NOISE;
-        case 1: // Button 1 - Right Button: PITCHSHIFT
-          Serial.println("Pitch Shift Selected");
-          displayText("Pitch Shift");
-          return PITCHSHIFT;
-        case 2: // Button 2 - Up Button: TONESWEEP
-          Serial.println("Tone Sweep Selected");
-          displayText("Tone Sweep");
-          return TONESWEEP;
-        case 3: // Button 3 - Down Button: PARTY
-          Serial.println("PARTY MODE!!");
-          displayText("PARTY MODE Selected!!");
-          return PARTY;
-        default: // No mode if no button is pressed
-          Serial.println("No Mode Selected");
-          displayText("No Mode Selected");
-          return NONE;
-      }
-    }
+     default:
+      currentMode = NONE;
+      Serial.println("No Mode Selected");
+      displayText("No Mode Selected");      
+      break;      
   }
-
-  return NONE;
 }
 
 void shiftOnlyMode()
