@@ -1,3 +1,13 @@
+#include <Adafruit_NeoPixel.h>  // https://learn.adafruit.com/adafruit-neopixel-uberguide/arduino-library-use
+
+// LEDs
+#define LED_1 9
+#define LED_2 10
+
+#define NEOPIXEL_PIN 22 
+#define NUMPIXELS  1
+Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+
 void setupLights()
 {
   // LED

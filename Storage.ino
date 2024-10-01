@@ -50,6 +50,10 @@ void incrementCurrentTest()
   {
     currentTest = 0;
   }
+
+  Serial.print("Playing test file ");
+  Serial.println(getTestFile());
+  dirtyDisplay = true;
 }
 
 void playSdAudio(const char *filename)

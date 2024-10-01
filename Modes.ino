@@ -3,6 +3,7 @@
 void startModulation()
 {
   SoundMode mode = getCurrentMode();
+  setMode(mode);
 
   switch (mode) 
   {
@@ -52,39 +53,27 @@ void incrementMode()
   switch (currentMode)
   {
     case NOISE:
-      currentMode = PITCHSHIFT;
-      Serial.println("Pitch Shift Selected");
-      displayText("Pitch Shift");
+      setMode(PITCHSHIFT);
       break;
            
     case PITCHSHIFT:
-      currentMode = TONESWEEP;
-      Serial.println("Tone Sweep Selected");
-      displayText("Tone Sweep");      
+      setMode(TONESWEEP);
       break;
     
     case TONESWEEP:
-      currentMode = PARTY;
-      Serial.println("PARTY MODE!!");
-      displayText("PARTY MODE Selected!!");
+      setMode(PARTY);
       break;    
     
     case PARTY:
-      currentMode = NONE;
-      Serial.println("No Mode Selected");
-      displayText("No Mode Selected");      
+      setMode(NONE);
       break;
     
     case NONE:
-      currentMode = NOISE;
-      Serial.println("Noise Mode Selected");
-      displayText("Noise Mode");
+      setMode(NOISE);
       break;
 
      default:
-      currentMode = NONE;
-      Serial.println("No Mode Selected");
-      displayText("No Mode Selected");      
+      setMode(NONE);
       break;      
   }
 }

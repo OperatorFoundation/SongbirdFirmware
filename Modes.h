@@ -18,4 +18,73 @@ SoundMode getCurrentMode()
   return currentMode;
 }
 
+void setMode(SoundMode newMode)
+{
+  currentMode = newMode;
+  switch (currentMode)
+  {
+    case NOISE:
+      Serial.println("Noise Mode Selected");
+      displayText("Noise Mode");
+      break;
+           
+    case PITCHSHIFT:
+      Serial.println("Pitch Shift Selected");
+      displayText("Pitch Shift");
+      break;
+    
+    case TONESWEEP:
+      Serial.println("Tone Sweep Selected");
+      displayText("Tone Sweep");      
+      break;    
+    
+    case PARTY:
+      Serial.println("PARTY MODE!!");
+      displayText("PARTY MODE Selected!!");
+      break;
+    
+    case NONE:
+      Serial.println("No Mode Selected");
+      displayText("No Mode Selected");      
+      break;
+
+     default:
+      Serial.println("No Mode Selected");
+      displayText("No Mode Selected");      
+      break;   
+  }
+
+  refreshDisplay();
+}
+
+void displayMode(SoundMode mode)
+{
+  switch (mode)
+  {
+    case NOISE:
+      displayLine("Noise Mode");
+      break;
+           
+    case PITCHSHIFT:
+      displayLine("Pitch Shift");
+      break;
+    
+    case TONESWEEP:
+      displayLine("Tone Sweep");      
+      break;    
+    
+    case PARTY:
+      displayLine("PARTY MODE Selected!!");
+      break;
+    
+    case NONE:
+      displayLine("No Mode Selected");      
+      break;
+
+     default:
+      displayLine("No Mode Selected");      
+      break;   
+  }
+}
+
 #endif

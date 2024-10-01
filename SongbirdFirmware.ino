@@ -6,8 +6,6 @@
 #include <SD.h>
 #include <Audio.h>
 
-#include "Settings.h"
-
 boolean sdFound = false;
 
 void setup()
@@ -24,18 +22,6 @@ void setup()
   Serial.println("setup done");
 }
 
-void loop()
-{
-  if (isDevModeEnabled())
-  {
-    playSdAudio(getTestFile());
-  }
-
-  handleButtons();
-  
-  loopModulation();
-}
-
 void setupHardware() 
 {
   setupButtons();
@@ -47,4 +33,18 @@ void setupHardware()
   setupAudioProcessing();
 
   setupDisplay();
+}
+
+void loop()
+{
+  if (isDevModeEnabled())
+  {
+    playSdAudio(getTestFile());
+  }
+
+  handleButtons();
+  
+  loopModulation();
+
+  updateDisplay();
 }

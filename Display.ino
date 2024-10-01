@@ -1,8 +1,25 @@
-#include "Settings.h"
+#include <Adafruit_SSD1306.h>   // https://learn.adafruit.com/monochrome-oled-breakouts/wiring-128x32-i2c-display
+#include <Adafruit_GFX.h>       // https://learn.adafruit.com/adafruit-gfx-graphics-library/overview
+
+#include "Modes.h"
+
+// Display
+#define SCREEN_WIDTH 128    // OLED display width, in p ixels
+#define SCREEN_HEIGHT 32    // OLED display height, in pixels
+#define SCREEN_ADDRESS 0x3C // 0x3C for 128x32
+#define OLED_RESET     -1   // Reset pin #, if not connected use -1
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, OLED_RESET);  // display is connected to second I2C
+
+boolean dirtyDisplay = true;
 
 void setupDisplay()
 {
     display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
+}
+
+void refreshDisplay()
+{
+  dirtyDisplay = true;
 }
 
 void displayText(String text)
@@ -17,10 +34,45 @@ void displayText(String text)
   display.println(text);
   display.setCursor(0,0);
   display.display(); // actually display all of the above
-  delay(2000);
 }
 
-void testDisplay(){
+void displayLine(String text)
+{
+  display.println(text);
+}
+
+void updateDisplay()
+{
+  if (dirtyDisplay)
+  {
+    dirtyDisplay = false;
+  }
+  else
+  {
+    return;
+  }
+  
+  display.clearDisplay();
+  display.display();
+
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+
+  displayMode(getCurrentMode());
+
+  if (isDevModeEnabled())
+  {
+    display.println("(DEV)");
+  }
+  else
+  {
+    display.println();
+  }
+}
+
+void testDisplay()
+{
   // print text
   Serial.println(">>> Test display");
   display.display();
