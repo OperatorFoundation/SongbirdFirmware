@@ -46,6 +46,8 @@ void handleButtons()
   if (buttons[2].fallingEdge())
   {
     Serial.println("B2");
+
+    toggleDevMode();
   }
 
   if (buttons[3].fallingEdge())

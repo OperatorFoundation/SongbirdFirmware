@@ -7,7 +7,6 @@
 #include <Audio.h>
 
 #include "Settings.h"
-#include "config.h"
 
 boolean sdFound = false;
 
@@ -27,9 +26,10 @@ void setup()
 
 void loop()
 {
-  #ifdef DEV_MODE
-  playSdAudio(getTestFile());
-  #endif
+  if (isDevModeEnabled())
+  {
+    playSdAudio(getTestFile());
+  }
 
   handleButtons();
   
