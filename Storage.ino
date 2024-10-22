@@ -93,6 +93,7 @@ const char *getTestFile()
 
 void incrementCurrentTest()
 {
+  player.stop();
   currentTest++;
   dirtyDisplay = true;
 }
