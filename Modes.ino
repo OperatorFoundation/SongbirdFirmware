@@ -3,7 +3,6 @@
 void startModulation()
 {
   SoundMode mode = getCurrentMode();
-  setMode(mode);
 
   switch (mode) 
   {
@@ -76,6 +75,8 @@ void incrementMode()
       setMode(NONE);
       break;      
   }
+
+  startModulation();
 }
 
 void shiftOnlyMode()
