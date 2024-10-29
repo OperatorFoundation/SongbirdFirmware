@@ -108,8 +108,8 @@ void setupAudioProcessing()
 
   // Output mixer for USB microphone audio output sourced from either headset microphone (production) or wav player (dev)
   effectsMixer.gain(0, 0.5); // Pitch shifted headset microphone (production) or wave player (dev) signal takes slot 0.
-  effectsMixer.gain(1, 0); // Noise takes effects mixer slot 1
-  effectsMixer.gain(2, 0); // Tones sweep takes effects mixer slot 2
+  effectsMixer.gain(1, 0.5); // Noise takes effects mixer slot 1
+  effectsMixer.gain(2, 0.5); // Tones sweep takes effects mixer slot 2
 }
 
 void setProductionDevMixer()
