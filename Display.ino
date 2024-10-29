@@ -69,15 +69,8 @@ void updateDisplay()
   if (isDevModeEnabled())
   {
     display.println("(DEV)");
-    const char *testFile = getTestFile();
-    if (!testFile)
-    {
-      display.println("No test file");      
-    }
-    else
-    {
-      display.println(testFile);      
-    }    
+    String testFile = getCurrentPlayingFileName();
+    display.println(testFile);   
   }
   else
   {

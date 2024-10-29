@@ -34,8 +34,8 @@ void handleButtons()
   if (buttons[0].fallingEdge())
   {
     Serial.println("B0");
-
-    incrementCurrentTest();
+    playNextFile();
+    // incrementCurrentTest();
   }
 
   if (buttons[1].fallingEdge())

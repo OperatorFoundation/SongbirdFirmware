@@ -39,11 +39,14 @@ void loop()
 {
   if (isDevModeEnabled())
   {
-    const char *testFile = getTestFile();
-    if (testFile)
-    {
-      playSdAudio(testFile);
-    }
+    playFile();
+
+    // const char *testFile = getTestFile();
+    // if (testFile)
+    // {
+      
+    //   playSdAudio(testFile);
+    // }
   }
 
   handleButtons();
