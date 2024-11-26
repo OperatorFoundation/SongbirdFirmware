@@ -19,7 +19,7 @@ AudioInputUSB inputFromUSB; // USB headphones input
 
 // Generators
 AudioPlaySdWav player; // Wav player input (dev)
-AudioSynthNoiseWhite noise; // White noise effect
+AudioSynthNoisePink pinkNoise; // Pink noise effect
 AudioSynthToneSweep tonesweep; // Tonesweep effect
 
 // Effects
@@ -71,7 +71,7 @@ AudioConnection patchCordPDPitchshift(productionDevMixer, 0, pitchShifter, 0); /
 AudioConnection patchCordPitchshiftEffectsMix(pitchShifter, 0, effectsMixer, 0); // Pitchshifted Headest / wav input takes effects mixer slot 0
 
 // (noise -> mixer) -> USB microphone output
-AudioConnection patchCordNoiseEffectsMix(noise, 0, effectsMixer, 1); // Noise takes effects mixer slot 1
+AudioConnection patchCordNoiseEffectsMix(pinkNoise, 0, effectsMixer, 1); // Noise takes effects mixer slot 1
 
 // (tone sweep -> mixer) -> USB microphone output
 AudioConnection patchCordTonesweepEffectsMix(tonesweep, 0, effectsMixer, 2); // Tones sweep takes effects mixer slot 2

@@ -34,12 +34,12 @@ void setNoiseLevels()
   noiseAmplitude = randomFloat(minNoiseAmplitude, maxNoiseAmplitude);
 
   // Set the output peak level, from 0 (off) to 1.0. The default is off. Noise is generated only after setting to a non-zero level.
-  noise.amplitude(noiseAmplitude);
+  pinkNoise.amplitude(noiseAmplitude);
 }
 
 void stopNoise()
 {
-  noise.amplitude(0);
+  pinkNoise.amplitude(0);
 }
 
 float randomFloat(float min, float max)

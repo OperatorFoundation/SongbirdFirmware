@@ -1,15 +1,18 @@
 #define GRANULAR_MEMORY_SIZE 12800  // enough for 290 ms at 44.1 kHz
 int16_t granularMemory[GRANULAR_MEMORY_SIZE];
-float pitchShiftRatio = 4.0;
-float pitchShiftGrainLength = 0; // grainLength is specified in milliseconds, up to one third of the memory from begin()
+
+// More than 1.03 sounds too high and less than 0.98 sounds too low for the voice to be recognizable as that person, 
+// lower than 0.98 could work nicely for something that sounds human but not the like the same person
+float pitchShiftRatio = 0.98; 
+float pitchShiftGrainLength = 23; // grainLength is specified in milliseconds, up to one third of the memory from begin()
 
 void setupPitchShift()
 {
   // TODO: Tweak the sample sizes based on relevant sizes: 1 msec, 3 msec, 25 msec
-  float someValue = 0.25;
-  float msec = 1.0 + (someValue * 99.0);
-  pitchShiftGrainLength = msec;
-
+  // float someValue = 0.15;
+  // float msec = 1.0 + (someValue * 99.0);
+  // pitchShiftGrainLength = msec;
+  
   // the Granular effect requires memory to operate
   pitchShifter.begin(granularMemory, GRANULAR_MEMORY_SIZE);
 }
