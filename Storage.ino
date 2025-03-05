@@ -1,8 +1,10 @@
 #include <SD.h>
 
-#define SDCARD_CS_PIN    BUILTIN_SDCARD
-#define SDCARD_MOSI_PIN  7
-#define SDCARD_SCK_PIN   14
+#define SDCARD_DETECT_PIN 9
+#define SDCARD_CS_PIN    10
+#define SDCARD_MOSI_PIN  11
+#define SDCARD_MISO_PIN 12
+#define SDCARD_SCK_PIN   13
 
 const int maxTestFiles = 10; // Adjust if more test files are added
 String testFileNames[maxTestFiles]; 
@@ -12,8 +14,11 @@ String currentPlayingFile = "No test file";
 
 void setupStorage()
 {
+  pinMode(SDCARD_DETECT_PIN,  INPUT_PULLUP);
   SPI.setMOSI(SDCARD_MOSI_PIN);
+  SPI.setMISO(SDCARD_MISO_PIN);
   SPI.setSCK(SDCARD_SCK_PIN);
+  
   if (!(SD.begin(SDCARD_CS_PIN)))
   {
     Serial.println("SD Card initialization failed!");

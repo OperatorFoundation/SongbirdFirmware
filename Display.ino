@@ -15,6 +15,7 @@ boolean dirtyDisplay = true;
 void setupDisplay()
 {
     display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
+    display.setRotation(2);
 }
 
 void refreshDisplay()

@@ -4,9 +4,9 @@
 #define I2S_SCLK 21
 #define I2S_LRCLK 20
 
-#define HPAMP_VOL_CLK 38
-#define HPAMP_VOL_UD 37
-#define HPAMP_SHUTDOWN 36
+#define HPAMP_VOL_CLK 0
+#define HPAMP_VOL_UD 1
+#define HPAMP_SHUTDOWN 2
 
 // AUDIO
 
@@ -19,6 +19,7 @@ AudioInputUSB inputFromUSB; // USB headphones input
 
 // Generators
 AudioPlaySdWav player; // Wav player input (dev)
+// AudioSynthNoiseBrown brownNoise;
 AudioSynthNoisePink pinkNoise; // Pink noise effect
 AudioSynthToneSweep tonesweep; // Tonesweep effect
 
@@ -89,6 +90,14 @@ void setupAudioProcessing()
   audioShield.inputSelect(AUDIO_INPUT_MIC);  // AUDIO_INPUT_LINEIN or AUDIO_INPUT_MIC
 
   delay(1000);
+
+  // Setup Headphones
+  digitalWrite(HPAMP_VOL_CLK,  LOW);
+  digitalWrite(HPAMP_VOL_UD,   LOW);
+  digitalWrite(HPAMP_SHUTDOWN, LOW); // LOW to enable headphone amp
+  pinMode(HPAMP_VOL_CLK,  OUTPUT);
+  pinMode(HPAMP_VOL_UD,   OUTPUT);
+  pinMode(HPAMP_SHUTDOWN, OUTPUT);
   
   // Mixers
 

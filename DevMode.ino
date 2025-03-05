@@ -1,4 +1,4 @@
-boolean dev_mode = true;
+boolean dev_mode = false;
 
 boolean isDevModeEnabled()
 {

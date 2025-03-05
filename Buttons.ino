@@ -1,10 +1,10 @@
 #include <Bounce2.h>            // https://www.pjrc.com/teensy/td_libs_Bounce.html
 
 // Button pins
-#define SW_LEFT_PIN 26
-#define SW_RIGHT_PIN 29
-#define SW_UP_PIN 28
-#define SW_DOWN_PIN 27
+#define SW_LEFT_PIN 6
+#define SW_RIGHT_PIN 3
+#define SW_UP_PIN 5
+#define SW_DOWN_PIN 4
 
 const int numButtons = 4;
 const int buttonPins[numButtons] = {SW_LEFT_PIN, SW_RIGHT_PIN, SW_UP_PIN, SW_DOWN_PIN};

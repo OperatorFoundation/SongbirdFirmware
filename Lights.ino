@@ -1,10 +1,10 @@
 #include <Adafruit_NeoPixel.h>  // https://learn.adafruit.com/adafruit-neopixel-uberguide/arduino-library-use
 
-// LEDs
-#define LED_1 9
-#define LED_2 10
+// LED1 is Blue and LED2 is pink
+#define LED_1 14
+#define LED_2 15
 
-#define NEOPIXEL_PIN 22 
+#define NEOPIXEL_PIN 22
 #define NUMPIXELS  1
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -15,13 +15,6 @@ void setupLights()
   digitalWrite(LED_2, LOW);
   pinMode(LED_1, OUTPUT);
   pinMode(LED_2, OUTPUT);
-
-  digitalWrite(HPAMP_VOL_CLK,  LOW);
-  digitalWrite(HPAMP_VOL_UD,   LOW);
-  digitalWrite(HPAMP_SHUTDOWN, HIGH); // disable headphone amp by setting HIGH
-  pinMode(HPAMP_VOL_CLK,  OUTPUT);
-  pinMode(HPAMP_VOL_UD,   OUTPUT);
-  pinMode(HPAMP_SHUTDOWN, OUTPUT);
 
   // Pixel
   pixels.begin();
