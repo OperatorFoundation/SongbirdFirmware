@@ -3,8 +3,8 @@ int16_t granularMemory[GRANULAR_MEMORY_SIZE];
 
 // More than 1.03 sounds too high and less than 0.98 sounds too low for the voice to be recognizable as that person, 
 // lower than 0.98 could work nicely for something that sounds human but not the like the same person
-float pitchShiftRatio = 0.98; 
-float pitchShiftGrainLength = 23; // grainLength is specified in milliseconds, up to one third of the memory from begin()
+float pitchShiftRatio = 0.98;
+float pitchShiftGrainLength = 50; // grainLength is specified in milliseconds, up to one third of the memory from begin()
 
 void setupPitchShift()
 {

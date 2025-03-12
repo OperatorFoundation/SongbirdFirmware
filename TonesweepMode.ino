@@ -8,7 +8,7 @@ void startTonesweep()
   // and the length of time of the sweep.
   float sweepAmplitude = 0.02;
   int sweepLo = 50;
-  int sweepHi = 1700;
+  int sweepHi = 850;
   float sweepTime = 10.0; // Length of time for the sweep in seconds
 
   // play(level, lowFreq, highFreq, time);
