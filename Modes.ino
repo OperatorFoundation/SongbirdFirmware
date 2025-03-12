@@ -8,18 +8,23 @@ void startModulation()
   {
     case NOISE:
       noiseOnlyMode();
+      modulationOnLights();
       break;
     case PITCHSHIFT:
       shiftOnlyMode();
+      modulationOnLights();
       break;
     case TONESWEEP:
       tonesweepOnlyMode();
+      modulationOnLights();
       break;
     case PARTY:
       partyMode();
+      modulationOnLights();
       break;
     case NONE:
       passthroughMode();
+      modulationOffLights();
       break;
   }
 }
@@ -49,6 +54,8 @@ void loopModulation()
 
 void previousMode()
 {
+  flashPixelMulticolor();
+
   switch (currentMode)
   {
     case NOISE:
@@ -64,7 +71,7 @@ void previousMode()
       break;    
     
     case PARTY:
-      setMode(NOISE);
+      setMode(TONESWEEP);
       break;
 
     default:
@@ -77,6 +84,8 @@ void previousMode()
 
 void incrementMode()
 {
+  flashPixelMulticolor();
+
   switch (currentMode)
   {
     case NOISE:
@@ -92,7 +101,7 @@ void incrementMode()
       break;    
     
     case PARTY:
-      setMode(NONE);
+      setMode(NOISE);
       break;
 
     default:
@@ -136,7 +145,15 @@ void maintainParty()
 
 void passthroughMode()
 {
+  if (getCurrentMode() != NONE)
+  {
+    flashPixelMulticolor();
+    setMode(NONE);
+  }
+  
   stopPitchShift();
   stopNoise();
   // Tonesweep will stop on its own if not being maintained
+
+  modulationOffLights();
 }

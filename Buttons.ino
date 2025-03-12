@@ -34,8 +34,7 @@ void handleButtons()
   if (buttons[0].fallingEdge()) // LEFT
   {
     Serial.println("LEFT Button");
-    void previousMode();
-
+    previousMode();
     // playNextFile();
   }
 
@@ -48,7 +47,7 @@ void handleButtons()
   if (buttons[2].fallingEdge()) // TOP
   {
     Serial.println("TOP Button");
-    setMode(NONE);
+    passthroughMode();
   }
 
   if (buttons[3].fallingEdge()) // MIDDLE
