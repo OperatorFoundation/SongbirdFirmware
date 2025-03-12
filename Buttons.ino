@@ -31,29 +31,28 @@ void handleButtons()
     buttons[index].update();
   }  
 
-  if (buttons[0].fallingEdge())
+  if (buttons[0].fallingEdge()) // LEFT
   {
-    Serial.println("B0");
-    playNextFile();
-    // incrementCurrentTest();
+    Serial.println("LEFT Button");
+    void previousMode();
+
+    // playNextFile();
   }
 
-  if (buttons[1].fallingEdge())
+  if (buttons[1].fallingEdge()) // RIGHT
   {
-    Serial.println("B1");
-
+    Serial.println("RIGHT Button");
     incrementMode();
   }
 
-  if (buttons[2].fallingEdge())
+  if (buttons[2].fallingEdge()) // TOP
   {
-    Serial.println("B2");
-
-    toggleDevMode();
+    Serial.println("TOP Button");
+    setMode(NONE);
   }
 
-  if (buttons[3].fallingEdge())
+  if (buttons[3].fallingEdge()) // MIDDLE
   {
-    Serial.println("B3");
+    Serial.println("MIDDLE Button");
   }  
 }

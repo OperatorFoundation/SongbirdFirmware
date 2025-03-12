@@ -47,6 +47,34 @@ void loopModulation()
   }
 }
 
+void previousMode()
+{
+  switch (currentMode)
+  {
+    case NOISE:
+      setMode(PARTY);
+      break;
+           
+    case PITCHSHIFT:
+      setMode(NOISE);
+      break;
+    
+    case TONESWEEP:
+      setMode(PITCHSHIFT);
+      break;    
+    
+    case PARTY:
+      setMode(NOISE);
+      break;
+
+    default:
+      setMode(NOISE);
+      break;      
+  }
+
+  startModulation();
+}
+
 void incrementMode()
 {
   switch (currentMode)
@@ -66,13 +94,9 @@ void incrementMode()
     case PARTY:
       setMode(NONE);
       break;
-    
-    case NONE:
-      setMode(NOISE);
-      break;
 
-     default:
-      setMode(NONE);
+    default:
+      setMode(NOISE);
       break;      
   }
 
