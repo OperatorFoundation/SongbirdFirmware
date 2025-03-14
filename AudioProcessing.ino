@@ -19,10 +19,8 @@ AudioInputUSB inputFromUSB; // USB headphones input
 
 // Generators
 AudioPlaySdWav player; // Wav player input (dev)
-// AudioSynthNoiseBrown brownNoise;
 AudioSynthNoisePink pinkNoise; // Pink noise effect
-AudioSynthToneSweep tonesweep; // Tonesweep effect
-
+AudioSynthWaveformSine waveform; // Sine Wave effect
 // Effects
 AudioEffectGranular pitchShifter; // Pitch shift effect
 
@@ -75,7 +73,7 @@ AudioConnection patchCordPitchshiftEffectsMix(pitchShifter, 0, effectsMixer, 0);
 AudioConnection patchCordNoiseEffectsMix(pinkNoise, 0, effectsMixer, 1); // Noise takes effects mixer slot 1
 
 // (tone sweep -> mixer) -> USB microphone output
-AudioConnection patchCordTonesweepEffectsMix(tonesweep, 0, effectsMixer, 2); // Tones sweep takes effects mixer slot 2
+AudioConnection patchCordWaveformEffectsMix(waveform, 0, effectsMixer, 2); // Tones sweep takes effects mixer slot 2
 
 // Output connections: all outputs have a mixer in front of them, which is a recommended best practice for Teensy audio programming. Don't forget to set the mixer levels.
 
@@ -118,7 +116,7 @@ void setupAudioProcessing()
   // Output mixer for USB microphone audio output sourced from either headset microphone (production) or wav player (dev)
   effectsMixer.gain(0, 0.5); // Pitch shifted headset microphone (production) or wave player (dev) signal takes slot 0.
   effectsMixer.gain(1, 0.5); // Noise takes effects mixer slot 1
-  effectsMixer.gain(2, 0.5); // Tones sweep takes effects mixer slot 2
+  effectsMixer.gain(2, 0); // Waveform takes effects mixer slot 2
 }
 
 void setProductionDevMixer()

@@ -14,8 +14,8 @@ void startModulation()
       shiftOnlyMode();
       modulationOnLights();
       break;
-    case TONESWEEP:
-      tonesweepOnlyMode();
+    case WAVEFORM:
+      waveformOnlyMode();
       modulationOnLights();
       break;
     case PARTY:
@@ -41,8 +41,8 @@ void loopModulation()
     case PITCHSHIFT:
       maintainShift();
       break;
-    case TONESWEEP:
-      maintainTonesweep();
+    case WAVEFORM:
+      maintainWaveform();
       break;
     case PARTY:
       maintainParty();
@@ -66,12 +66,12 @@ void previousMode()
       setMode(NOISE);
       break;
     
-    case TONESWEEP:
+    case WAVEFORM:
       setMode(PITCHSHIFT);
       break;    
     
     case PARTY:
-      setMode(TONESWEEP);
+      setMode(WAVEFORM);
       break;
 
     default:
@@ -93,10 +93,10 @@ void incrementMode()
       break;
            
     case PITCHSHIFT:
-      setMode(TONESWEEP);
+      setMode(WAVEFORM);
       break;
     
-    case TONESWEEP:
+    case WAVEFORM:
       setMode(PARTY);
       break;    
     
@@ -114,33 +114,34 @@ void incrementMode()
 
 void shiftOnlyMode()
 {
-  stopNoise();
+  stopEveryMode();
   startPitchShift();
 }
 
 void noiseOnlyMode()
 {
-  stopPitchShift();
+  stopEveryMode();
   startNoise();
 }
 
-void tonesweepOnlyMode()
+void waveformOnlyMode()
 {
-  stopPitchShift();
-  stopNoise();
-  startTonesweep();
+  stopEveryMode();
+  startWaveform();
 }
 
 void partyMode()
 {
   startNoise();
   startPitchShift();
-  startTonesweep();
+  startWaveform();
 }
 
 void maintainParty()
 {
-  maintainTonesweep();
+  maintainWaveform();
+  maintainNoise();
+  maintainShift();
 }
 
 void passthroughMode()
@@ -151,9 +152,13 @@ void passthroughMode()
     setMode(NONE);
   }
   
+  stopEveryMode();
+  modulationOffLights();
+}
+
+void stopEveryMode()
+{
   stopPitchShift();
   stopNoise();
-  // Tonesweep will stop on its own if not being maintained
-
-  modulationOffLights();
+  stopWaveform();
 }

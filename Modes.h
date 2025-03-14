@@ -5,7 +5,7 @@ enum SoundMode
 {
   NOISE,
   PITCHSHIFT,
-  TONESWEEP,
+  WAVEFORM,
   PARTY,
   NONE
 };
@@ -31,7 +31,7 @@ void setMode(SoundMode newMode)
       Serial.println("Pitch Shift Selected");
       break;
     
-    case TONESWEEP:
+    case WAVEFORM:
       Serial.println("Tone Sweep Selected");
       break;    
     
@@ -63,7 +63,7 @@ void displayMode(SoundMode mode)
       displayLine("Pitch Shift");
       break;
     
-    case TONESWEEP:
+    case WAVEFORM:
       displayLine("Tone Sweep");      
       break;    
     
