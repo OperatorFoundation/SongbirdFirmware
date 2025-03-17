@@ -2,6 +2,8 @@
 
 void startModulation()
 {
+  AudioInterrupts();
+
   SoundMode mode = getCurrentMode();
 
   switch (mode) 
@@ -27,6 +29,8 @@ void startModulation()
       modulationOffLights();
       break;
   }
+
+  AudioNoInterrupts();
 }
 
 void loopModulation()
