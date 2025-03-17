@@ -2,7 +2,7 @@
 
 void startModulation()
 {
-  AudioInterrupts();
+  AudioNoInterrupts();
 
   SoundMode mode = getCurrentMode();
 
@@ -30,12 +30,12 @@ void startModulation()
       break;
   }
 
-  AudioNoInterrupts();
+  AudioInterrupts();
 }
 
 void loopModulation()
 {
-  AudioInterrupts();
+  AudioNoInterrupts();
 
   SoundMode mode = getCurrentMode();
 
@@ -56,8 +56,8 @@ void loopModulation()
     case NONE:
       break;
   }
-  
-  AudioNoInterrupts();
+
+  AudioInterrupts();
 }
 
 void previousMode()

@@ -8,8 +8,8 @@ const float AMPLITUDE = 1.0;
 
 
 // Constants for frequency parameters - Full human voice range
-const float BASE_FREQUENCY = 252.5;      // Center frequency in Hz (middle of human voice range 85-420 Hz)
-const float FREQUENCY_RANGE = 167.5;     // How much the frequency varies (+/-)
+const float BASE_FREQUENCY = 200;      // Center frequency in Hz (near middle of human voice range 85-420 Hz)
+const float FREQUENCY_RANGE = 100;     // How much the frequency varies (+/-)
                                          // This gives a full range from 85Hz to 420Hz
                                          // Human voice generally ranges from ~85Hz (lower registers) to ~420Hz (higher registers)
 
@@ -40,7 +40,7 @@ void startWaveform()
     waveform.amplitude(AMPLITUDE);
     
     // Restore mixer gain
-    effectsMixer.gain(2, 0.5);
+    effectsMixer.gain(2, 0.05);
     
     waveformPlaying = true;
 }
