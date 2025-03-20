@@ -1,3 +1,5 @@
+#include "hilbert251A.h"
+
 #define I2S_DIN 7
 #define I2S_DOUT 8
 #define SYS_MCLK 23
@@ -7,6 +9,14 @@
 #define HPAMP_VOL_CLK 0
 #define HPAMP_VOL_UD 1
 #define HPAMP_SHUTDOWN 2
+
+// OpenAudio constants
+float gain_dB = -15.0f;
+float gain = 0.177828f;  // Same as -15 dB
+float sign = 1.0f;
+float deltaGain_dB = 2.5f;
+float frequencyLO = 100.0f;
+float delayms = 1.0f;
 
 // AUDIO
 
@@ -19,16 +29,29 @@ AudioInputUSB inputFromUSB; // USB headphones input
 
 // Generators
 AudioPlaySdWav player; // Wav player input (dev)
+// AudioSynthNoiseBrown brownNoise;
 AudioSynthNoisePink pinkNoise; // Pink noise effect
-AudioSynthWaveformSine waveform; // Sine Wave effect
-// Effects
-AudioEffectGranular pitchShifter; // Pitch shift effect
+AudioSynthWaveformSine waveform; // Sine wave for tonesweep effect
+
+// Audio to OpenAudio converters
+AudioConvert_I16toF32 itof; 
+
+// Filters: OpenAudio
+AudioFilter90Deg_F32 hilbert;
+AudioFilterFIR_F32 fir; // Low Pass Filter to frequency limit the SSB
 
 // Mixers
 AudioMixer4 leftHeadphonesMixer; // Output mixer for left channel of headset headphones
 AudioMixer4 rightHeadphonesMixer; // Output mixer for right channel of headset headphones
 AudioMixer4 productionDevMixer; // Input mixer to switch between production and dev audio signals
 AudioMixer4 effectsMixer; // Output mixer for USB microphone audio output sourced from either headset microphone (production) or wav player (dev)
+
+// Mixers: OpenAudio
+RadioIQMixer_F32 iqmixer;
+AudioMixer4_F32 sum; // Summing node for the SSB receiver
+
+// OpenAudio to Audio converters
+AudioConvert_F32toI16 ftoi;
 
 // Outputs
 AudioOutputI2S outputToHeadset; // Headset headphones output
@@ -64,16 +87,26 @@ AudioConnection patchCordWavPDMix(player, 0, productionDevMixer, 1); // Wav play
 // Effects to mixers: noise -> mixer; pitch shifter -> mixer (production); pitch shifter -> mixer (dev); tone sweep -> mixer.
 
 // Headset / wav input -> (mixer -> pitch shift) -> mixer -> USB microphone output
-AudioConnection patchCordPDPitchshift(productionDevMixer, 0, pitchShifter, 0); // production/dev mixer takes pitchShifter slot 0
+// production/dev mixer takes pitchShifter slot 0
+// AudioConnection patchCordPDPitchshift(productionDevMixer, 0, pitchShifter, 0); 
+AudioConnection patchCordProductionDevToConverter(productionDevMixer, 0, itof, 0); // connect to Left codec, 16-bit
+AudioConnection_F32 patchCordConverterToIQL(itof, 0, iqmixer, 0); // Input to 2 mixer channels
+AudioConnection_F32 patchCordConverterToIQR(itof, 0, iqmixer, 1);
+AudioConnection_F32 patchCordIQToHilbertL(iqmixer, 0, hilbert, 0); // Broadband 90 deg phase
+AudioConnection_F32 patchCordIQToHilbertR(iqmixer, 1, hilbert, 1);
+AudioConnection_F32 patchCordHilbertLToSum(hilbert, 0, sum, 0); // Sideband select
+AudioConnection_F32 patchCordHilbertRToSum(hilbert, 1, sum, 1);
+AudioConnection_F32 patchCordSumToConverter(sum, 0, itof, 0); // connect to the left output
 
 // Headset / wav input -> mixer -> (pitch shift -> mixer) -> USB microphone output
-AudioConnection patchCordPitchshiftEffectsMix(pitchShifter, 0, effectsMixer, 0); // Pitchshifted Headest / wav input takes effects mixer slot 0
+// AudioConnection patchCordPitchshiftEffectsMix(pitchShifter, 0, effectsMixer, 0); // Pitchshifted Headest / wav input takes effects mixer slot 0
+AudioConnection patchCordConverterToEffectsMixer(itof, 0, effectsMixer, 0);
 
 // (noise -> mixer) -> USB microphone output
 AudioConnection patchCordNoiseEffectsMix(pinkNoise, 0, effectsMixer, 1); // Noise takes effects mixer slot 1
 
 // (tone sweep -> mixer) -> USB microphone output
-AudioConnection patchCordWaveformEffectsMix(waveform, 0, effectsMixer, 2); // Tones sweep takes effects mixer slot 2
+AudioConnection patchCordTonesweepEffectsMix(waveform, 0, effectsMixer, 2); // Sine wave for tone sweep takes effects mixer slot 2
 
 // Output connections: all outputs have a mixer in front of them, which is a recommended best practice for Teensy audio programming. Don't forget to set the mixer levels.
 
@@ -86,6 +119,13 @@ void setupAudioProcessing()
   audioShield.enable();
   audioShield.volume(0.5);
   audioShield.inputSelect(AUDIO_INPUT_MIC);  // AUDIO_INPUT_LINEIN or AUDIO_INPUT_MIC
+  audioShield.adcHighPassFilterEnable();
+
+  // OpenAudio constants
+  const float sample_rate_Hz = 44117.f;
+  const int audio_block_samples = 128;
+  AudioSettings_F32 audio_settings(sample_rate_Hz, audio_block_samples);
+  AudioMemory_F32(200, audio_settings);  
 
   delay(1000);
 
@@ -116,7 +156,8 @@ void setupAudioProcessing()
   // Output mixer for USB microphone audio output sourced from either headset microphone (production) or wav player (dev)
   effectsMixer.gain(0, 0.5); // Pitch shifted headset microphone (production) or wave player (dev) signal takes slot 0.
   effectsMixer.gain(1, 0.5); // Noise takes effects mixer slot 1
-  effectsMixer.gain(2, 0); // Waveform takes effects mixer slot 2
+  effectsMixer.gain(2, 0.5); // Tones sweep takes effects mixer slot 2
+  effectsMixer.gain(3, 0.0); // Pass-through (non-pitch-shifted) audio takes slot 3
 }
 
 void setProductionDevMixer()

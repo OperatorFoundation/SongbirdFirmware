@@ -6,6 +6,10 @@
 #include <SD.h>
 #include <Audio.h>
 
+// OpenAudio includes
+#include "AudioStream_F32.h"
+#include <OpenAudio_ArduinoLibrary.h>
+
 boolean sdFound = false;
 
 void setup()
