@@ -101,6 +101,7 @@ AudioConnection_F32 patchCordSumToConverter(sum, 0, itof, 0); // connect to the 
 // Headset / wav input -> mixer -> (pitch shift -> mixer) -> USB microphone output
 // AudioConnection patchCordPitchshiftEffectsMix(pitchShifter, 0, effectsMixer, 0); // Pitchshifted Headest / wav input takes effects mixer slot 0
 AudioConnection patchCordConverterToEffectsMixer(itof, 0, effectsMixer, 0);
+AudioConnection patchCordPassthrough(productionDevMixer, 0, effectsMixer, 3);
 
 // (noise -> mixer) -> USB microphone output
 AudioConnection patchCordNoiseEffectsMix(pinkNoise, 0, effectsMixer, 1); // Noise takes effects mixer slot 1
