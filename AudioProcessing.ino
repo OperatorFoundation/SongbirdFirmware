@@ -96,11 +96,11 @@ AudioConnection_F32 patchCordIQToHilbertL(iqmixer, 0, hilbert, 0); // Broadband 
 AudioConnection_F32 patchCordIQToHilbertR(iqmixer, 1, hilbert, 1);
 AudioConnection_F32 patchCordHilbertLToSum(hilbert, 0, sum, 0); // Sideband select
 AudioConnection_F32 patchCordHilbertRToSum(hilbert, 1, sum, 1);
-AudioConnection_F32 patchCordSumToConverter(sum, 0, itof, 0); // connect to the left output
+AudioConnection_F32 patchCordSumToConverter(sum, 0, ftoi, 0); // connect to the left output
 
 // Headset / wav input -> mixer -> (pitch shift -> mixer) -> USB microphone output
 // AudioConnection patchCordPitchshiftEffectsMix(pitchShifter, 0, effectsMixer, 0); // Pitchshifted Headest / wav input takes effects mixer slot 0
-AudioConnection patchCordConverterToEffectsMixer(itof, 0, effectsMixer, 0);
+AudioConnection patchCordConverterToEffectsMixer(ftoi, 0, effectsMixer, 0);
 AudioConnection patchCordPassthrough(productionDevMixer, 0, effectsMixer, 3);
 
 // (noise -> mixer) -> USB microphone output
@@ -155,10 +155,10 @@ void setupAudioProcessing()
   setProductionDevMixer();
 
   // Output mixer for USB microphone audio output sourced from either headset microphone (production) or wav player (dev)
-  effectsMixer.gain(0, 0.5); // Pitch shifted headset microphone (production) or wave player (dev) signal takes slot 0.
+  effectsMixer.gain(0, 0.0); // Pitch shifted headset microphone (production) or wave player (dev) signal takes slot 0.
   effectsMixer.gain(1, 0.5); // Noise takes effects mixer slot 1
   effectsMixer.gain(2, 0.5); // Tones sweep takes effects mixer slot 2
-  effectsMixer.gain(3, 0.0); // Pass-through (non-pitch-shifted) audio takes slot 3
+  effectsMixer.gain(3, 0.5); // Pass-through (non-pitch-shifted) audio takes slot 3
 }
 
 void setProductionDevMixer()

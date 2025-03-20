@@ -8,7 +8,7 @@ void setupPitchShift()
 
 void startPitchShift()
 {
-  effectsMixer.gain(0, 0.5); // Turn on pitch-shifted audio
+  effectsMixer.gain(0, 3.0); // Turn on pitch-shifted audio
   effectsMixer.gain(3, 0); // Turn off pass-through audio
 }
 
