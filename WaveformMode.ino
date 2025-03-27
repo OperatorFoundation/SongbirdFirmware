@@ -40,7 +40,7 @@ void startWaveform()
     waveform.amplitude(AMPLITUDE);
     
     // Restore mixer gain
-    effectsMixer.gain(2, 0.05);
+    effectsMixer.gain(2, 0.1);
     
     waveformPlaying = true;
 }

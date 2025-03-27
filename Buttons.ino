@@ -1,4 +1,6 @@
-#include <Bounce2.h>            // https://www.pjrc.com/teensy/td_libs_Bounce.html
+// Wondering which Bounce2 library to install? It's included in the Teensy core.
+// https://www.pjrc.com/teensy/td_libs_Bounce.html
+#include <Bounce2.h> 
 
 // Button pins
 #define SW_LEFT_PIN 6

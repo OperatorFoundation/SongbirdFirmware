@@ -1,5 +1,3 @@
-#include "hilbert251A.h"
-
 #define I2S_DIN 7
 #define I2S_DOUT 8
 #define SYS_MCLK 23
@@ -15,7 +13,8 @@ float gain_dB = -15.0f;
 float gain = 0.177828f;  // Same as -15 dB
 float sign = 1.0f;
 float deltaGain_dB = 2.5f;
-float frequencyLO = 100.0f;
+// float frequencyLO = 100.0f; 
+float frequencyLO = -100.0f; 
 float delayms = 1.0f;
 
 // AUDIO
@@ -35,10 +34,6 @@ AudioSynthWaveformSine waveform; // Sine wave for tonesweep effect
 
 // Audio to OpenAudio converters
 AudioConvert_I16toF32 itof; 
-
-// Filters: OpenAudio
-AudioFilter90Deg_F32 hilbert;
-AudioFilterFIR_F32 fir; // Low Pass Filter to frequency limit the SSB
 
 // Mixers
 AudioMixer4 leftHeadphonesMixer; // Output mixer for left channel of headset headphones
@@ -92,10 +87,8 @@ AudioConnection patchCordWavPDMix(player, 0, productionDevMixer, 1); // Wav play
 AudioConnection patchCordProductionDevToConverter(productionDevMixer, 0, itof, 0); // connect to Left codec, 16-bit
 AudioConnection_F32 patchCordConverterToIQL(itof, 0, iqmixer, 0); // Input to 2 mixer channels
 AudioConnection_F32 patchCordConverterToIQR(itof, 0, iqmixer, 1);
-AudioConnection_F32 patchCordIQToHilbertL(iqmixer, 0, hilbert, 0); // Broadband 90 deg phase
-AudioConnection_F32 patchCordIQToHilbertR(iqmixer, 1, hilbert, 1);
-AudioConnection_F32 patchCordHilbertLToSum(hilbert, 0, sum, 0); // Sideband select
-AudioConnection_F32 patchCordHilbertRToSum(hilbert, 1, sum, 1);
+AudioConnection_F32 patchCordIQToSumL(iqmixer, 0, sum, 0); // Broadband 90 deg phase
+AudioConnection_F32 patchCordIQToSumR(iqmixer, 1, sum, 1);
 AudioConnection_F32 patchCordSumToConverter(sum, 0, ftoi, 0); // connect to the left output
 
 // Headset / wav input -> mixer -> (pitch shift -> mixer) -> USB microphone output
@@ -159,6 +152,11 @@ void setupAudioProcessing()
   effectsMixer.gain(1, 0.5); // Noise takes effects mixer slot 1
   effectsMixer.gain(2, 0.5); // Tones sweep takes effects mixer slot 2
   effectsMixer.gain(3, 0.5); // Pass-through (non-pitch-shifted) audio takes slot 3
+
+  iqmixer.setGainOut(0.5);
+
+  sum.gain(0, 0.5);
+  sum.gain(1, 0.5);
 }
 
 void setProductionDevMixer()

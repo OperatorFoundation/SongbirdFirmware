@@ -1,7 +1,6 @@
 void setupPitchShift()
 {
   iqmixer.frequency(frequencyLO);   // Frequency shift, Hz
-  hilbert.begin(hilbert251A, 251);  // Set the Hilbert transform FIR filter
   sum.gain(0, gain*sign);           // Set gains
   sum.gain(1, gain);
 }
