@@ -5,6 +5,10 @@
 
 #define NEOPIXEL_PIN 22
 #define NUMPIXELS  1
+
+// Brightness settings (0-255 for PWM, 0-255 for NeoPixel)
+#define LED_BRIGHTNESS 100 
+
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 void setupLights()
@@ -22,14 +26,14 @@ void setupLights()
 
 void modulationOnLights()
 {
-  digitalWrite(LED_1, LOW);
-  digitalWrite(LED_2, HIGH);
+  digitalWrite(LED_1, 0);
+  digitalWrite(LED_2, LED_BRIGHTNESS);
 }
 
 void modulationOffLights()
 {
-  digitalWrite(LED_1, HIGH);
-  digitalWrite(LED_2, LOW);
+  digitalWrite(LED_1, LED_BRIGHTNESS);
+  digitalWrite(LED_2, 0);
 }
 
 /*
