@@ -30,7 +30,7 @@ AudioInputUSB inputFromUSB; // USB headphones input
 AudioPlaySdWav player; // Wav player input (dev)
 // AudioSynthNoiseBrown brownNoise;
 AudioSynthNoisePink pinkNoise; // Pink noise effect
-AudioSynthWaveformSine waveform; // Sine wave for tonesweep effect
+AudioSynthWaveformSine waveform; // Sine wave for Waveform effect
 
 // Audio to OpenAudio converters
 AudioConvert_I16toF32 itof; 
@@ -61,6 +61,7 @@ AudioOutputUSB outputToUSB; // USB microphone output
 AudioConnection patchCordUSBLeftMixer(inputFromUSB, 0, leftHeadphonesMixer, 0); // USB headphones input left channel takes left headphones mixer slot 0
 AudioConnection patchCordUSBRightMixer(inputFromUSB, 1, rightHeadphonesMixer, 0); // USB headphones input right channel takes right headphones mixer slot 1
 
+
 // USB headphones input -> (mixer -> Headset headphones output). Separate mixers for left and right channels so that we keep the stereo signals separate.
 AudioConnection patchCordLeftMixerHeadset(leftHeadphonesMixer, 0, outputToHeadset, 0); // left headphone channel takes headset headphones output slot 0
 AudioConnection patchCordRightMixerHeadset(rightHeadphonesMixer, 0, outputToHeadset, 1); // right headphone channel takes headset headphones output slot 1
@@ -77,9 +78,13 @@ AudioConnection patchCordHeadsetPDMix(inputFromHeadset, 0, productionDevMixer, 0
 // (Wav file player input -> mixer) -> effects -> mixer -> USB microphone output (DEV_MODE)
 AudioConnection patchCordWavPDMix(player, 0, productionDevMixer, 1); // Wav player takes production/dev mixer slot 1
 
+// (USB Audio Input -> Mixer) -> effects -> mixer -> USB microphone output (DEV_MODE) * stereo (2 channels)
+AudioConnection patchCordUSBPDMix1(inputFromUSB, 0, productionDevMixer, 2);
+AudioConnection patchCordUSBPDMix2(inputFromUSB, 1, productionDevMixer, 3);
+
 // Effect connections - all effects are on the Headset microphone input -> USB headphones output signal path.
 
-// Effects to mixers: noise -> mixer; pitch shifter -> mixer (production); pitch shifter -> mixer (dev); tone sweep -> mixer.
+// Effects to mixers: noise -> mixer; pitch shifter -> mixer (production); pitch shifter -> mixer (dev); waveform -> mixer.
 
 // Headset / wav input -> (mixer -> pitch shift) -> mixer -> USB microphone output
 // production/dev mixer takes pitchShifter slot 0
@@ -99,12 +104,12 @@ AudioConnection patchCordPassthrough(productionDevMixer, 0, effectsMixer, 3);
 // (noise -> mixer) -> USB microphone output
 AudioConnection patchCordNoiseEffectsMix(pinkNoise, 0, effectsMixer, 1); // Noise takes effects mixer slot 1
 
-// (tone sweep -> mixer) -> USB microphone output
-AudioConnection patchCordTonesweepEffectsMix(waveform, 0, effectsMixer, 2); // Sine wave for tone sweep takes effects mixer slot 2
+// (Waveform -> mixer) -> USB microphone output
+AudioConnection patchCordWaveformEffectsMix(waveform, 0, effectsMixer, 2); // Sine wave for waveform takes effects mixer slot 2
 
 // Output connections: all outputs have a mixer in front of them, which is a recommended best practice for Teensy audio programming. Don't forget to set the mixer levels.
 
-// ((Headset microphone / wav) -> pitch shift) / noise / tone sweep -> (mixer -> Headset headphones output)
+// ((Headset microphone / wav) -> pitch shift) / noise / waveform -> (mixer -> Headset headphones output)
 AudioConnection patchCordEffectsUSB(effectsMixer, 0, outputToUSB, 0); // mixed effects output takes USB microphone output slot 0
 
 void setupAudioProcessing()
@@ -150,7 +155,7 @@ void setupAudioProcessing()
   // Output mixer for USB microphone audio output sourced from either headset microphone (production) or wav player (dev)
   effectsMixer.gain(0, 0.0); // Pitch shifted headset microphone (production) or wave player (dev) signal takes slot 0.
   effectsMixer.gain(1, 0.5); // Noise takes effects mixer slot 1
-  effectsMixer.gain(2, 0.5); // Tones sweep takes effects mixer slot 2
+  effectsMixer.gain(2, 0.5); // Waveform takes effects mixer slot 2
   effectsMixer.gain(3, 0.5); // Pass-through (non-pitch-shifted) audio takes slot 3
 
   iqmixer.setGainOut(0.5);
@@ -165,11 +170,15 @@ void setProductionDevMixer()
   if (isDevModeEnabled()) // Dev mode means all wav player, no microphone
   {
     productionDevMixer.gain(0, 0); // Headset microphone takes production/dev mixer slot 0
-    productionDevMixer.gain(1, 1); // Wav player takes production/dev mixer slot 1
+    // productionDevMixer.gain(1, 1); // Wav player (SD Card) takes production/dev mixer slot 1
+    productionDevMixer.gain(2, 1); // USB Audio channel 1 takes production/dev mixer slot 2
+    productionDevMixer.gain(3, 1); // USB Audio channel 2 takes production/dev mixer slot 3
   }
   else // Production mode means all microphone, no wav player
   {
     productionDevMixer.gain(0, 1); // Headset microphone takes production/dev mixer slot 0
     productionDevMixer.gain(1, 0); // Wav player takes production/dev mixer slot 1    
+    productionDevMixer.gain(2, 0); // USB Audio channel 1 takes production/dev mixer slot 2
+    productionDevMixer.gain(3, 0); // USB Audio channel 2 takes production/dev mixer slot 3
   }
 }

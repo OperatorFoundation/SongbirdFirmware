@@ -55,5 +55,6 @@ void handleButtons()
   if (buttons[3].fallingEdge()) // MIDDLE
   {
     Serial.println("MIDDLE Button");
+    toggleDevMode();
   }  
 }

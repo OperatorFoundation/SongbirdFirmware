@@ -32,7 +32,7 @@ void setMode(SoundMode newMode)
       break;
     
     case WAVEFORM:
-      Serial.println("Tone Sweep Selected");
+      Serial.println("Waveform Selected");
       break;    
     
     case PARTY:
@@ -64,7 +64,7 @@ void displayMode(SoundMode mode)
       break;
     
     case WAVEFORM:
-      displayLine("Tone Sweep");      
+      displayLine("Waveform");      
       break;    
     
     case PARTY:

@@ -43,7 +43,7 @@ void loop()
 {
   if (isDevModeEnabled())
   {
-    playFile();
+    // playFile();
 
     // const char *testFile = getTestFile();
     // if (testFile)
@@ -51,6 +51,8 @@ void loop()
       
     //   playSdAudio(testFile);
     // }
+
+    handleSerialInput();
   }
 
   handleButtons();
