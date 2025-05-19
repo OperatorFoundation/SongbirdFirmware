@@ -14,7 +14,7 @@ float gain = 0.177828f;  // Same as -15 dB
 float sign = 1.0f;
 float deltaGain_dB = 2.5f;
 // float frequencyLO = 100.0f; 
-float frequencyLO = -100.0f; 
+float frequencyLO = -50.0f; 
 float delayms = 1.0f;
 
 // AUDIO

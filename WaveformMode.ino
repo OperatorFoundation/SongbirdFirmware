@@ -8,7 +8,7 @@ const float AMPLITUDE = 1.0;
 
 
 // Constants for frequency parameters - Full human voice range
-const float BASE_FREQUENCY = 200;      // Center frequency in Hz (near middle of human voice range 85-420 Hz)
+const float BASE_FREQUENCY = 185;      // Center frequency in Hz (near middle of human voice range 85-420 Hz)
 const float FREQUENCY_RANGE = 100;     // How much the frequency varies (+/-)
                                          // This gives a full range from 85Hz to 420Hz
                                          // Human voice generally ranges from ~85Hz (lower registers) to ~420Hz (higher registers)
