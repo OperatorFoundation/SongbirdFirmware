@@ -30,7 +30,7 @@ const unsigned long UPDATE_INTERVAL = 10; // The human ear can't detect frequenc
 
 void setupWaveform()
 {
-  waveform.frequency(BASE_FREQUENCY);
+  // waveform.frequency(BASE_FREQUENCY);
   waveform.amplitude(AMPLITUDE);
 }
 
@@ -40,7 +40,10 @@ void startWaveform()
     waveform.amplitude(AMPLITUDE);
     
     // Restore mixer gain
-    effectsMixer.gain(2, 0.1);
+    effectsMixer.gain(WAVEFORMCHANNEL, audioLevelWaveform);
+    effectsMixer.gain(PASSTHROUGHCHANNEL, audioLevelPassthrough);
+    effectsMixer.gain(NOISECHANNEL, 0);
+    effectsMixer.gain(PITCHSHIFTCHANNEL, 0);
     
     waveformPlaying = true;
 }
@@ -58,10 +61,13 @@ void stopWaveform()
   if (waveformPlaying)
   {
     // Set amplitude to 0 to stop the sound
-    waveform.amplitude(0);
+     waveform.amplitude(0);
     
     // Update mixer gain to 0
-    effectsMixer.gain(2, 0);
+    effectsMixer.gain(PASSTHROUGHCHANNEL, audioLevelPassthrough);
+    effectsMixer.gain(WAVEFORMCHANNEL, 0);
+    effectsMixer.gain(NOISECHANNEL, 0);
+    effectsMixer.gain(PITCHSHIFTCHANNEL, 0);
     
     waveformPlaying = false;
   }

@@ -7,8 +7,10 @@ void setupPitchShift()
 
 void startPitchShift()
 {
-  effectsMixer.gain(0, 3.0); // Turn on pitch-shifted audio
-  effectsMixer.gain(3, 0); // Turn off pass-through audio
+  effectsMixer.gain(PITCHSHIFTCHANNEL, audioLevelPitchshift); // Turn on pitch-shifted audio
+  effectsMixer.gain(PASSTHROUGHCHANNEL, 0); // Turn off pass-through audio
+  effectsMixer.gain(NOISECHANNEL, 0);
+  effectsMixer.gain(WAVEFORMCHANNEL, 0);
 }
 
 void maintainShift()
@@ -17,6 +19,8 @@ void maintainShift()
 
 void stopPitchShift()
 {
-  effectsMixer.gain(0, 0); // Turn off pitch-shifted audio
-  effectsMixer.gain(3, 0.5); // Turn on pass-through audio
+  effectsMixer.gain(PASSTHROUGHCHANNEL, audioLevelPassthrough); // Turn on pass-through audio
+  effectsMixer.gain(PITCHSHIFTCHANNEL, 0); // Turn off pitch-shifted audio
+  effectsMixer.gain(NOISECHANNEL, 0);
+  effectsMixer.gain(WAVEFORMCHANNEL, 0);
 }

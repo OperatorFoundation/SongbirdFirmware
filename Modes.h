@@ -10,6 +10,14 @@ enum SoundMode
   NONE
 };
 
+enum EffectsChannel
+{
+  PITCHSHIFTCHANNEL,
+  NOISECHANNEL,
+  WAVEFORMCHANNEL,
+  PASSTHROUGHCHANNEL
+};
+
 SoundMode currentMode = NONE;
 
 // In order to have a function that returns an enum type, the enum type definition and the function definition must be in a .h file. This is a side effect of Arduino code reordering.

@@ -41,8 +41,17 @@ void setupHardware()
 
 void loop()
 {
+  // if (millis() % 500 == 0)
+  // {
+  //   Serial.println("-----------------------");
+  //   Serial.println(AudioMemoryUsage());
+  //   Serial.println(AudioMemoryUsageMax());
+  //   Serial.println("-----------------------");
+  // }
+
   if (isDevModeEnabled())
   {
+
     // playFile();
 
     // const char *testFile = getTestFile();

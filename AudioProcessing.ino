@@ -1,3 +1,7 @@
+#include "Modes.h"
+#include "synth_nothing.h"
+#include "synth_rosenoise.h"
+
 #define I2S_DIN 7
 #define I2S_DOUT 8
 #define SYS_MCLK 23
@@ -13,11 +17,16 @@ float gain_dB = -15.0f;
 float gain = 0.177828f;  // Same as -15 dB
 float sign = 1.0f;
 float deltaGain_dB = 2.5f;
-// float frequencyLO = 100.0f; 
+// float frequencyLO = 100.0f;
 float frequencyLO = -50.0f; 
 float delayms = 1.0f;
 
 // AUDIO
+
+float audioLevelPassthrough = 0.5;
+float audioLevelWaveform = 0.1;
+float audioLevelPitchshift = 3.0;
+float audioLevelNoise = 0.5;
 
 // Codecs
 AudioControlSGTL5000 audioShield;
@@ -29,11 +38,12 @@ AudioInputUSB inputFromUSB; // USB headphones input
 // Generators
 AudioPlaySdWav player; // Wav player input (dev)
 // AudioSynthNoiseBrown brownNoise;
-AudioSynthNoisePink pinkNoise; // Pink noise effect
+AudioSynthNoiseRose pinkNoise; // Pink noise effect
 AudioSynthWaveformSine waveform; // Sine wave for Waveform effect
+// AudioSynthNothing waveform; // FIXME: Debug purposes only
 
 // Audio to OpenAudio converters
-AudioConvert_I16toF32 itof; 
+AudioConvert_I16toF32 itof;
 
 // Mixers
 AudioMixer4 leftHeadphonesMixer; // Output mixer for left channel of headset headphones
@@ -59,7 +69,7 @@ AudioOutputUSB outputToUSB; // USB microphone output
 
 // (USB headphones input -> mixer) -> Headset headphones output. Separate mixers for left and right channels so that we keep the stereo signals separate.
 AudioConnection patchCordUSBLeftMixer(inputFromUSB, 0, leftHeadphonesMixer, 0); // USB headphones input left channel takes left headphones mixer slot 0
-AudioConnection patchCordUSBRightMixer(inputFromUSB, 1, rightHeadphonesMixer, 0); // USB headphones input right channel takes right headphones mixer slot 1
+AudioConnection patchCordUSBRightMixer(inputFromUSB, 1, rightHeadphonesMixer, 0); // USB headphones input right channel takes right headphones mixer slot 0
 
 
 // USB headphones input -> (mixer -> Headset headphones output). Separate mixers for left and right channels so that we keep the stereo signals separate.
@@ -114,7 +124,7 @@ AudioConnection patchCordEffectsUSB(effectsMixer, 0, outputToUSB, 0); // mixed e
 
 void setupAudioProcessing()
 {
-  AudioMemory(12);
+  AudioMemory(25);
   audioShield.enable();
   audioShield.volume(0.5);
   audioShield.inputSelect(AUDIO_INPUT_MIC);  // AUDIO_INPUT_LINEIN or AUDIO_INPUT_MIC
@@ -153,10 +163,10 @@ void setupAudioProcessing()
   setProductionDevMixer();
 
   // Output mixer for USB microphone audio output sourced from either headset microphone (production) or wav player (dev)
-  effectsMixer.gain(0, 0.0); // Pitch shifted headset microphone (production) or wave player (dev) signal takes slot 0.
-  effectsMixer.gain(1, 0.5); // Noise takes effects mixer slot 1
-  effectsMixer.gain(2, 0.5); // Waveform takes effects mixer slot 2
-  effectsMixer.gain(3, 0.5); // Pass-through (non-pitch-shifted) audio takes slot 3
+  effectsMixer.gain(PITCHSHIFTCHANNEL, 0.0); // Pitch shifted headset microphone (production) or wave player (dev) signal takes slot 0.
+  effectsMixer.gain(NOISECHANNEL, 0.0); // Noise takes effects mixer slot 1
+  effectsMixer.gain(WAVEFORMCHANNEL, 0.0); // Waveform takes effects mixer slot 2
+  effectsMixer.gain(PASSTHROUGHCHANNEL, audioLevelPassthrough); // Pass-through (non-pitch-shifted) audio takes slot 3
 
   iqmixer.setGainOut(0.5);
 
